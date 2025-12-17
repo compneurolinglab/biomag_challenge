@@ -378,7 +378,7 @@
         .timeline-item {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.8rem;
             position: relative;
         }
 
@@ -845,7 +845,7 @@
         <div class="hero-content">
             <div class="hero-text">
                 <h1>Take the <span>Challenge!</span></h1>
-                <p>Register to compete in this year's BIOMEG data challenge! Join researchers worldwide in decoding MEG signals and advancing our understanding of brain connectivity.</p>
+                <p>Register to compete in the BIOMEG 2026 Data Challenge! Work with naturalistic MEG and fMRI data to decode brain activity, with a focus on cross-modality transfer and robust generalization across subjects.</p>
                 <a href="#register" class="btn btn-primary">Register Now</a>
                 <a href="#about" class="btn btn-secondary">Learn More</a>
             </div>
@@ -860,20 +860,20 @@
         <div class="container">
             <div class="section-title">
                 <h2>Competition Information</h2>
-                <p>Explore cutting-edge MEG data analysis and contribute to neuroscience research</p>
+                <p>Explore cutting-edge brain data analysis and advance neuroscience</p>
             </div>
             <div class="about-content">
                 <div class="about-card">
                     <h3>Background</h3>
-                    <p>Cogitate is an international adversarial collaboration aimed at testing contrasting predictions of two neuroscientific theories of consciousness: Global Neuronal Workspace Theory (GNWT) and Integrated Information Theory (IIT). One of these predictions pertains to the interareal connectivity associated with the conscious experience.</p>
+                    <p>The <strong>BIOMEG 2026 Data Challenge</strong> is an official satellite event of the BIOMEG 2026 conference in Beijing, China. The challenge aims to promote reproducible and generalizable methods at the intersection of natural language processing, cognitive neuroscience, and brain decoding.</p>
                     <br>
-                    <p>Specifically, GNWT predicts that a conscious experience requires phase-synchronization in the gamma/beta band between prefrontal cortex (PFC) and category-selective visual areas in the temporal lobe (i.e., FFA for faces and LOC for objects). IIT predicts phase-synchronization between these category-selective areas and low-level visual areas (e.g., V1/V2).</p>
+                    <p>Recent advances in large language models (LLMs) have opened new frontiers for understanding how the brain processes language. By aligning neural representations with computational language models, researchers can now decode semantic content from brain activity with unprecedented accuracy—making this an exciting time to explore cross-modal and cross-subject brain decoding.</p>
                 </div>
                 <div class="about-card">
                     <h3>Dataset</h3>
-                    <p>To test these hypotheses, neuroimaging (fMRI) and neurophysiological data (MEG, EEG, and ECoG) were acquired from healthy volunteers and patients with pharmaco-resistant focal epilepsy while they were presented with sequences of suprathreshold images from four different categories (i.e., faces, objects, letters, and false fonts) and for three different durations (0.5s, 1s and 1.5s).</p>
+                    <p>The challenge uses brain recordings acquired while participants listened to the <strong>Chinese translation</strong> of <em>The Little Prince</em> as a continuous narrative. This design captures neural responses in a setting that closely reflects real-world comprehension. The fMRI data are part of the widely used <em>Le Petit Prince</em> multilingual naturalistic corpus.</p>
                     <br>
-                    <p>The Challenge will focus on the MEG data sets collected using the TRIUX MEGIN system. Data have been collected from ~100 participants.</p>
+                    <p>Importantly, the <strong>MEG data are newly collected</strong> using exactly the same Chinese stimulus materials as fMRI! We are thrilled to share this unique dataset with participants. This enables direct investigation of cross-modality alignment (MEG ↔ fMRI) and supports models that generalize across both subjects and measurement modalities.</p>
                 </div>
             </div>
         </div>
@@ -884,23 +884,22 @@
         <div class="container">
             <div class="section-title">
                 <h2>Aim of the Competition</h2>
-                <p>So far, the Cogitate consortium has not been successful in establishing evidence for functional connectivity in MEG regarding gamma/beta band coherence as initially hypothesized. This evidently challenges the specific predictions of those two theories of consciousness.</p>
             </div>
             <div class="aims-grid">
                 <div class="aim-card">
+                    <div class="icon">🎯</div>
+                    <h4>Develop Generalizable Decoding Methods</h4>
+                    <p>Advance decoding approaches that extract meaningful information from MEG and fMRI signals under realistic experimental conditions. Emphasis is placed on methods that generalize across individuals and are robust to variability in neural responses.</p>
+                </div>
+                <div class="aim-card">
+                    <div class="icon">🔄</div>
+                    <h4>Enable Cross-Modality Representation Learning</h4>
+                    <p>By providing MEG and fMRI data collected with identical stimuli and timing, the challenge promotes methods that align, transfer, or jointly model neural representations across modalities. Leverage the complementary temporal and spatial properties of MEG and fMRI.</p>
+                </div>
+                <div class="aim-card">
                     <div class="icon">📊</div>
-                    <h4>Functional Connectivity Measures</h4>
-                    <p>Make a case for meaningful measures of functional connectivity that can be applied to the Cogitate MEG dataset to test the predictions, i.e., connectivity that is selectively modulated by stimulus category (and task relevance).</p>
-                </div>
-                <div class="aim-card">
-                    <div class="icon">🔬</div>
-                    <h4>Any Measure Allowed</h4>
-                    <p>Any measure is allowed (including phase coherence in the gamma/beta band). Innovation in methodology is encouraged.</p>
-                </div>
-                <div class="aim-card">
-                    <div class="icon">🧠</div>
-                    <h4>Theory Interpretation</h4>
-                    <p>Interpret the outcomes of the functional connectivity measures considering the specific predictions made by GNWT and IIT.</p>
+                    <h4>Benchmark Decoding with Naturalistic Stimulation</h4>
+                    <p>Using continuous narrative stimuli as a shared paradigm, the competition provides a standardized benchmark for evaluating decoding methods on complex, time-varying brain data. The focus remains on methodological generality rather than task-specific tuning.</p>
                 </div>
             </div>
         </div>
@@ -911,27 +910,27 @@
         <div class="container">
             <div class="section-title">
                 <h2>Timeline</h2>
-                <p>Key dates for the BIOMEG 2026 Data Challenge</p>
+                <p>Save the Key dates for the BIOMEG 2026 Data Challenge</p>
             </div>
             <div class="timeline-container">
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <div class="timeline-date">March 2026</div>
-                        <h4>Batch 1 MEG Data Release</h4>
+                        <h4>Batch 1 Data Release</h4>
                     </div>
                     <div class="timeline-dot"></div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <div class="timeline-date">June 2026</div>
-                        <h4>First (Draft) Report Due (Preregistration)</h4>
+                        <h4>First (Draft) Report Due (preregistration)</h4>
                     </div>
                     <div class="timeline-dot"></div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <div class="timeline-date">June 2026</div>
-                        <h4>Batch 2 MEG Data Release</h4>
+                        <h4>Batch 2 Data Release</h4>
                     </div>
                     <div class="timeline-dot"></div>
                 </div>
@@ -952,7 +951,7 @@
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <div class="timeline-date">BIOMEG 2026</div>
-                        <h4>Winner Announced</h4>
+                        <h4>Winner Announced @ Beijing</h4>
                     </div>
                     <div class="timeline-dot"></div>
                 </div>
@@ -971,17 +970,17 @@
                 <div class="step-card">
                     <div class="step-number">1</div>
                     <h4>Register</h4>
-                    <p>Register as a Cogitate Data User and agree to the terms of use</p>
+                    <p>Register and agree to the terms of use</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">2</div>
                     <h4>Login</h4>
-                    <p>Login to your Cogitate Data User account</p>
+                    <p>Login to your official account</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">3</div>
                     <h4>Download Batch 1</h4>
-                    <p>Download MEG and Eye Tracking data bundles (Batch 1)</p>
+                    <p>Download MEG and fMRI data bundles (Batch 1)</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">4</div>
