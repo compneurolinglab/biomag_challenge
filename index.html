@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIOMEG 2026 - Decoding Data Challenge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #263B55;
+            --navy-dark: #1a2a3d;
+            --navy-light: #3a5577;
+            --orange: #D35400;
+            --orange-light: #e67e22;
+            --orange-glow: rgba(211, 84, 0, 0.15);
+            --cream: #faf8f5;
+            --white: #ffffff;
+            --gray-100: #f7f7f7;
+            --gray-200: #e8e8e8;
+            --gray-500: #6b7280;
+        } 
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--navy);
+            line-height: 1.7;
+            background: var(--cream);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            line-height: 1.2;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-decoration: none;
+        }
+        
+        .nav-logo span {
+            color: var(--orange);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--navy);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--orange);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--orange);
+            color: var(--white) !important;
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .nav-cta:hover {
+            background: var(--orange-light);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(135deg, var(--cream) 0%, #e8e4df 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 150%;
+            background: radial-gradient(ellipse, var(--orange-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-text h1 span {
+            color: var(--orange);
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--gray-500);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-logo {
+            max-width: 100%;
+            height: auto;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: var(--white);
+            box-shadow: 0 4px 20px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(211, 84, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--navy);
+            border: 2px solid var(--navy);
+            margin-left: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--gray-500);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* About Section */
+        .about {
+            background: var(--white);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .about-card {
+            background: var(--cream);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border-left: 4px solid var(--orange);
+        }
+
+        .about-card h3 {
+            font-size: 1.5rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .about-card p {
+            color: var(--gray-500);
+            line-height: 1.8;
+        }
+
+        /* Competition Info */
+        .competition {
+            background: var(--navy);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .competition::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .competition .section-title h2 {
+            color: var(--white);
+        }
+
+        .competition .section-title p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .aims-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .aim-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .aim-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .aim-card .icon {
+            width: 60px;
+            height: 60px;
+            background: var(--orange);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .aim-card h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .aim-card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        /* Timeline Section */
+        .timeline {
+            background: var(--cream);
+        }
+
+        .timeline-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--orange), var(--navy));
+            border-radius: 3px;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-content {
+            width: calc(50% - 40px);
+            background: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: calc(50% + 25px);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-right: calc(50% + 25px);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--orange);
+            border-radius: 50%;
+            border: 4px solid var(--cream);
+            z-index: 1;
+        }
+
+        .timeline-date {
+            font-weight: 700;
+            color: var(--orange);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        /* Data Access */
+        .data-access {
+            background: var(--white);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step-card h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--navy);
+        }
+
+        .step-card p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        /* Evaluation Criteria */
+        .evaluation {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            color: var(--white);
+        }
+
+        .evaluation .section-title h2,
+        .evaluation .section-title p {
+            color: var(--white);
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .criteria-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .criteria-points {
+            background: var(--orange);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        .criteria-card h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .criteria-card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Prizes */
+        .prizes {
+            background: var(--cream);
+        }
+
+        .prizes-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .prize-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            min-width: 250px;
+        }
+
+        .prize-card:nth-child(1) {
+            transform: scale(1.05);
+            border: 3px solid var(--orange);
+        }
+
+        .prize-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .prize-card:nth-child(1):hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .prize-place {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .prize-medal {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .prize-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .prize-card:nth-child(1) .prize-amount {
+            color: var(--orange);
+        }
+
+        /* Organizers */
+        .organizers {
+            background: var(--white);
+        }
+
+        .organizers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .organizer-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .organizer-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy) 100%);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--white);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .organizer-card h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.3rem;
+        }
+
+        .organizer-card p {
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy-dark);
+            color: var(--white);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            height: 80px;
+            margin-bottom: 2rem;
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .footer-text a {
+            color: var(--orange);
+            text-decoration: none;
+        }
+
+        .supporters {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .supporters h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--navy);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-text p {
+                margin: 0 auto 2rem;
+            }
+
+            .hero-logo {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 1rem 2rem;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .timeline-container::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(odd) {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-left: 50px;
+            }
+
+            .timeline-content,
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                width: 100%;
+                margin: 0;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .btn-secondary {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .prizes-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .prize-card:nth-child(1) {
+                transform: none;
+                order: -1;
+            }
+
+            .prize-card:nth-child(1):hover {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--navy-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--navy);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-logo">BIOMEG<span>2026</span></a>
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about">About</a></li>
+                <li><a href="#competition">Competition</a></li>
+                <li><a href="#timeline">Timeline</a></li>
+                <li><a href="#data">Data Access</a></li>
+                <li><a href="#evaluation">Evaluation</a></li>
+                <li><a href="#prizes">Prizes</a></li>
+                <li><a href="#register" class="nav-cta">Register Now</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Take the <span>Challenge!</span></h1>
+                <p>Register to compete in this year's BIOMEG data challenge! Join researchers worldwide in decoding MEG signals and advancing our understanding of brain connectivity.</p>
+                <a href="#register" class="btn btn-primary">Register Now</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+            <div class="hero-image">
+                <img src="logo.png" alt="BIOMEG 2026 Decoding Data Challenge" class="hero-logo">
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>Competition Information</h2>
+                <p>Explore cutting-edge MEG data analysis and contribute to neuroscience research</p>
+            </div>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>Background</h3>
+                    <p>Cogitate is an international adversarial collaboration aimed at testing contrasting predictions of two neuroscientific theories of consciousness: Global Neuronal Workspace Theory (GNWT) and Integrated Information Theory (IIT). One of these predictions pertains to the interareal connectivity associated with the conscious experience.</p>
+                    <br>
+                    <p>Specifically, GNWT predicts that a conscious experience requires phase-synchronization in the gamma/beta band between prefrontal cortex (PFC) and category-selective visual areas in the temporal lobe (i.e., FFA for faces and LOC for objects). IIT predicts phase-synchronization between these category-selective areas and low-level visual areas (e.g., V1/V2).</p>
+                </div>
+                <div class="about-card">
+                    <h3>Dataset</h3>
+                    <p>To test these hypotheses, neuroimaging (fMRI) and neurophysiological data (MEG, EEG, and ECoG) were acquired from healthy volunteers and patients with pharmaco-resistant focal epilepsy while they were presented with sequences of suprathreshold images from four different categories (i.e., faces, objects, letters, and false fonts) and for three different durations (0.5s, 1s and 1.5s).</p>
+                    <br>
+                    <p>The Challenge will focus on the MEG data sets collected using the TRIUX MEGIN system. Data have been collected from ~100 participants.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competition Goals -->
+    <section class="competition" id="competition">
+        <div class="container">
+            <div class="section-title">
+                <h2>Aim of the Competition</h2>
+                <p>So far, the Cogitate consortium has not been successful in establishing evidence for functional connectivity in MEG regarding gamma/beta band coherence as initially hypothesized. This evidently challenges the specific predictions of those two theories of consciousness.</p>
+            </div>
+            <div class="aims-grid">
+                <div class="aim-card">
+                    <div class="icon">📊</div>
+                    <h4>Functional Connectivity Measures</h4>
+                    <p>Make a case for meaningful measures of functional connectivity that can be applied to the Cogitate MEG dataset to test the predictions, i.e., connectivity that is selectively modulated by stimulus category (and task relevance).</p>
+                </div>
+                <div class="aim-card">
+                    <div class="icon">🔬</div>
+                    <h4>Any Measure Allowed</h4>
+                    <p>Any measure is allowed (including phase coherence in the gamma/beta band). Innovation in methodology is encouraged.</p>
+                </div>
+                <div class="aim-card">
+                    <div class="icon">🧠</div>
+                    <h4>Theory Interpretation</h4>
+                    <p>Interpret the outcomes of the functional connectivity measures considering the specific predictions made by GNWT and IIT.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline" id="timeline">
+        <div class="container">
+            <div class="section-title">
+                <h2>Timeline</h2>
+                <p>Key dates for the BIOMEG 2026 Data Challenge</p>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">March 2026</div>
+                        <h4>Batch 1 MEG Data Release</h4>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">June 2026</div>
+                        <h4>First (Draft) Report Due (Preregistration)</h4>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">June 2026</div>
+                        <h4>Batch 2 MEG Data Release</h4>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">July 2026</div>
+                        <h4>Replication Report Due</h4>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">August 2026</div>
+                        <h4>Competition Scoring</h4>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">BIOMEG 2026</div>
+                        <h4>Winner Announced</h4>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Access -->
+    <section class="data-access" id="data">
+        <div class="container">
+            <div class="section-title">
+                <h2>How to Access the Data</h2>
+                <p>Follow these steps to get started with the challenge</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Register</h4>
+                    <p>Register as a Cogitate Data User and agree to the terms of use</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Login</h4>
+                    <p>Login to your Cogitate Data User account</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Download Batch 1</h4>
+                    <p>Download MEG and Eye Tracking data bundles (Batch 1)</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h4>Download Batch 2</h4>
+                    <p>Download the complete dataset when released</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="#" class="btn btn-primary">Access Data Portal</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Evaluation Criteria -->
+    <section class="evaluation" id="evaluation">
+        <div class="container">
+            <div class="section-title">
+                <h2>Evaluation Criteria</h2>
+                <p>How submissions will be scored (Total: 100 points)</p>
+            </div>
+            <div class="criteria-grid">
+                <div class="criteria-card">
+                    <div class="criteria-points">20 pts</div>
+                    <div>
+                        <h4>Relevance of the Measure</h4>
+                        <p>Demonstrate a clear rationale for the chosen functional connectivity measure and explain how it aligns with the specific predictions of GNWT and IIT.</p>
+                    </div>
+                </div>
+                <div class="criteria-card">
+                    <div class="criteria-points">20 pts</div>
+                    <div>
+                        <h4>Statistical Assessment</h4>
+                        <p>Use appropriate statistical tests to evaluate the significance of the findings.</p>
+                    </div>
+                </div>
+                <div class="criteria-card">
+                    <div class="criteria-points">20 pts</div>
+                    <div>
+                        <h4>Interpretation</h4>
+                        <p>Clearly interpret the functional connectivity outcomes in the context of GNWT and IIT predictions. Discuss any unexpected findings.</p>
+                    </div>
+                </div>
+                <div class="criteria-card">
+                    <div class="criteria-points">15 pts</div>
+                    <div>
+                        <h4>Concerns on Interpretation</h4>
+                        <p>Address potential confounding factors such as field spread and event-related fields. Discuss strategies to mitigate these concerns.</p>
+                    </div>
+                </div>
+                <div class="criteria-card">
+                    <div class="criteria-points">10 pts</div>
+                    <div>
+                        <h4>Clarity and Quality</h4>
+                        <p>Present a well-organized and clear report. Include relevant figures and replication-friendly code with clear comments.</p>
+                    </div>
+                </div>
+                <div class="criteria-card">
+                    <div class="criteria-points">15 pts</div>
+                    <div>
+                        <h4>Reliability and Replication</h4>
+                        <p>Describe measures taken to address reliability concerns. Replicate findings on the second half of the dataset.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prizes -->
+    <section class="prizes" id="prizes">
+        <div class="container">
+            <div class="section-title">
+                <h2>Prizes</h2>
+                <p>Recognition for the top performing teams</p>
+            </div>
+            <div class="prizes-grid">
+                <div class="prize-card">
+                    <div class="prize-place">First Place</div>
+                    <div class="prize-medal">🥇</div>
+                    <div class="prize-amount">€1,000</div>
+                </div>
+                <div class="prize-card">
+                    <div class="prize-place">Second Place</div>
+                    <div class="prize-medal">🥈</div>
+                    <div class="prize-amount">€500</div>
+                </div>
+                <div class="prize-card">
+                    <div class="prize-place">Third Place</div>
+                    <div class="prize-medal">🥉</div>
+                    <div class="prize-amount">€250</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Submission Guidelines -->
+    <section class="about" id="submission">
+        <div class="container">
+            <div class="section-title">
+                <h2>How to Submit</h2>
+                <p>Submission requirements and guidelines</p>
+            </div>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>Report Requirements</h3>
+                    <p>Teams are required to submit a written report supplemented by figures and codes (max 8 pages). The report should comprehensively address all the evaluation criteria. The results should ideally be reported in the format of Figure 4 in Cogitate et al. (2023). The provided code should be replication-friendly and with clear comments.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Key Considerations</h3>
+                    <p>Make explicit how concerns on overfitting and reliability were addressed (e.g., consider developing measures on one part of the data set and test on the second part). Address potential concerns complicating the interpretation (e.g., field spread and event-related fields). At the end of the challenge, all submitted materials will be made public.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Organizers -->
+    <section class="organizers" id="organizers">
+        <div class="container">
+            <div class="section-title">
+                <h2>Organizers</h2>
+                <p>Meet the team behind BIOMEG 2026 Data Challenge</p>
+            </div>
+            <div class="organizers-grid">
+                <div class="organizer-card">
+                    <div class="organizer-avatar">OF</div>
+                    <h4>Oscar Ferrante</h4>
+                    <p>Centre for Human Brain Health, University of Birmingham, UK</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">LL</div>
+                    <h4>Ling Liu</h4>
+                    <p>Peking University, Beijing, China</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">OJ</div>
+                    <h4>Ole Jensen</h4>
+                    <p>Centre for Human Brain Health, University of Birmingham, UK</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">HL</div>
+                    <h4>Huan Luo</h4>
+                    <p>Peking University, Beijing, China</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">PS</div>
+                    <h4>Praveen Sripad</h4>
+                    <p>Max Planck Institute for Empirical Aesthetics, Germany</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">TB</div>
+                    <h4>Tanya Brown</h4>
+                    <p>Max Planck Institute for Empirical Aesthetics, Germany</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">LM</div>
+                    <h4>Lucia Melloni</h4>
+                    <p>Max Planck Institute for Empirical Aesthetics, Germany</p>
+                </div>
+                <div class="organizer-card">
+                    <div class="organizer-avatar">LM</div>
+                    <h4>Liad Mudrik</h4>
+                    <p>Tel Aviv University, Israel</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="competition" id="register">
+        <div class="container" style="text-align: center;">
+            <h2 style="font-size: 2.5rem; color: white; margin-bottom: 1rem;">Ready to Take the Challenge?</h2>
+            <p style="color: rgba(255,255,255,0.8); font-size: 1.2rem; margin-bottom: 2rem;">Join researchers worldwide in this exciting data challenge</p>
+            <a href="#" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.2rem 3rem;">Register Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-text">
+            BIOMEG 2026 Decoding Data Challenge<br>
+            <a href="#">Contact Us</a>
+        </p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('navLinks').classList.remove('active');
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+
