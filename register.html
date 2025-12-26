@@ -1127,7 +1127,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1205,6 +1205,54 @@
                 // Create Firebase Auth account
                 const userCredential = await createUserWithEmailAndPassword(auth, formData.email, password);
                 const user = userCredential.user;
+                
+                // Check if this email was invited by someone
+                const inviteRef = doc(db, 'invites', formData.email.toLowerCase());
+                const inviteDoc = await getDoc(inviteRef);
+                
+                if (inviteDoc.exists()) {
+                    // This user was invited! Link them to the inviter's team
+                    const inviteData = inviteDoc.data();
+                    
+                    // Add the inviter as a team member for this new user
+                    formData.teamMembers = formData.teamMembers || [];
+                    formData.teamMembers.push({
+                        name: inviteData.inviterName,
+                        email: inviteData.inviterEmail,
+                        affiliation: '',
+                        registered: true,
+                        userId: inviteData.inviterUserId,
+                        linkedAt: new Date().toISOString()
+                    });
+                    
+                    // Update the inviter's document to mark this member as registered
+                    const inviterRef = doc(db, 'users', inviteData.inviterUserId);
+                    const inviterDoc = await getDoc(inviterRef);
+                    
+                    if (inviterDoc.exists()) {
+                        const inviterData = inviterDoc.data();
+                        const updatedTeamMembers = (inviterData.teamMembers || []).map(member => {
+                            if (member.email.toLowerCase() === formData.email.toLowerCase()) {
+                                return {
+                                    ...member,
+                                    name: `${formData.title || ''} ${formData.firstName} ${formData.lastName}`.trim(),
+                                    affiliation: formData.affiliation,
+                                    registered: true,
+                                    userId: user.uid,
+                                    linkedAt: new Date().toISOString()
+                                };
+                            }
+                            return member;
+                        });
+                        
+                        await updateDoc(inviterRef, {
+                            teamMembers: updatedTeamMembers
+                        });
+                    }
+                    
+                    // Delete the invite document
+                    await deleteDoc(inviteRef);
+                }
                 
                 // Save user profile to Firestore
                 await setDoc(doc(db, 'users', user.uid), formData);

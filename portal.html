@@ -328,7 +328,19 @@
             display: grid;
             grid-template-columns: 1fr auto;
             gap: 0.5rem;
-            align-items: center;
+            align-items: flex-start;
+            border-left: 4px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .team-member-card.registered {
+            border-left-color: #22c55e;
+            background: linear-gradient(to right, rgba(34, 197, 94, 0.05), var(--cream));
+        }
+
+        .team-member-card.pending {
+            border-left-color: #f59e0b;
+            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), var(--cream));
         }
 
         .team-member-info h5 {
@@ -342,7 +354,21 @@
         .team-member-info p {
             font-size: 0.8rem;
             color: var(--gray-500);
-            margin: 0;
+            margin: 0.2rem 0;
+        }
+
+        .team-member-info .linked-note {
+            color: #16a34a;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .team-member-info .pending-note {
+            color: #d97706;
+            font-style: italic;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
         }
 
         .team-member-status {
@@ -831,7 +857,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, arrayUnion, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -892,13 +918,15 @@
             }
 
             teamList.innerHTML = teamMembers.map(member => `
-                <div class="team-member-card">
+                <div class="team-member-card ${member.registered ? 'registered' : 'pending'}">
                     <div class="team-member-info">
                         <h5>${member.name || 'Unnamed'}</h5>
-                        <p>${member.email || ''} ${member.affiliation ? '• ' + member.affiliation : ''}</p>
+                        <p><strong>Email:</strong> ${member.email || 'N/A'}</p>
+                        ${member.affiliation ? `<p><strong>Affiliation:</strong> ${member.affiliation}</p>` : ''}
+                        ${member.registered ? `<p class="linked-note">✓ Account linked - you can both see each other as teammates</p>` : `<p class="pending-note">⏳ Waiting for registration with ${member.email}</p>`}
                     </div>
                     <span class="team-member-status ${member.registered ? 'status-registered' : 'status-invited'}">
-                        ${member.registered ? 'Registered' : 'Invited'}
+                        ${member.registered ? '✓ Linked' : 'Invited'}
                     </span>
                 </div>
             `).join('');
@@ -990,7 +1018,7 @@
             const inviteBtn = document.getElementById('inviteBtn');
             
             const name = nameInput.value.trim();
-            const email = emailInput.value.trim();
+            const email = emailInput.value.trim().toLowerCase();
             
             if (!name || !email) {
                 showMessage('Missing Information', 'Please enter both name and email.', 'error');
@@ -1006,8 +1034,13 @@
             inviteBtn.disabled = true;
             
             try {
-                // Add to Firestore
+                // Get current user's info for the invite
                 const userRef = doc(db, 'users', currentUserId);
+                const currentUserDoc = await getDoc(userRef);
+                const currentUserData = currentUserDoc.data();
+                const inviterName = `${currentUserData.title || ''} ${currentUserData.firstName || ''} ${currentUserData.lastName || ''}`.trim();
+
+                // Add to user's teamMembers
                 await updateDoc(userRef, {
                     teamMembers: arrayUnion({
                         name: name,
@@ -1017,20 +1050,31 @@
                         invitedAt: new Date().toISOString()
                     })
                 });
+
+                // Create an invite record so the invitee can be linked when they register
+                const inviteRef = doc(db, 'invites', email);
+                await setDoc(inviteRef, {
+                    inviterUserId: currentUserId,
+                    inviterName: inviterName,
+                    inviterEmail: currentUserData.email,
+                    invitedEmail: email,
+                    invitedName: name,
+                    createdAt: new Date().toISOString()
+                }, { merge: true });
                 
                 // Clear inputs
                 nameInput.value = '';
                 emailInput.value = '';
                 
                 // Refresh team list
-                const userDoc = await getDoc(userRef);
-                if (userDoc.exists()) {
-                    renderTeamMembers(userDoc.data().teamMembers || []);
+                const updatedUserDoc = await getDoc(userRef);
+                if (updatedUserDoc.exists()) {
+                    renderTeamMembers(updatedUserDoc.data().teamMembers || []);
                 }
                 
                 showMessage(
-                    'Team Member Added!', 
-                    `<strong>${name}</strong> has been added to your team.<br><br>Please share this registration link with them:<br><a href="${window.location.origin}/register.html" style="color: var(--orange); word-break: break-all;">${window.location.origin}/register.html</a>`,
+                    'Invitation Sent!', 
+                    `<strong>${name}</strong> has been invited to your team.<br><br>When they register with <strong>${email}</strong>, they will automatically be linked to your team and you'll both see each other in your portals.<br><br>Share this link:<br><a href="${window.location.origin}/register.html" style="color: var(--orange); word-break: break-all;">${window.location.origin}/register.html</a>`,
                     'success'
                 );
                 
