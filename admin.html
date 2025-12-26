@@ -572,13 +572,18 @@
                 teamsList.innerHTML = allTeams.map(team => {
                     const teamMembers = usersByTeam[team.id] || [];
                     const memberCount = teamMembers.length;
+                    const displayTeamName = team.teamName || 'Unnamed Team';
                     
                     return `
                         <div class="team-card" data-team-id="${team.id}">
                             <div class="team-header">
                                 <div class="team-info">
-                                    <h4>${team.teamLeaderName || 'Unknown Team'} ${team.isLegacy ? '<span style="color: var(--orange); font-size: 0.75rem;">(Legacy - needs migration)</span>' : ''}</h4>
-                                    <p>${team.teamLeaderEmail || 'No email'} • ${memberCount} member${memberCount !== 1 ? 's' : ''} • Created: ${new Date(team.createdAt).toLocaleDateString()}</p>
+                                    <h4>🏷️ ${displayTeamName} ${team.isLegacy ? '<span style="color: var(--orange); font-size: 0.75rem;">(Legacy)</span>' : ''}</h4>
+                                    <p style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">
+                                        <strong>Team ID:</strong> <code style="background: var(--gray-100); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem;">${team.id}</code>
+                                    </p>
+                                    <p><strong>Leader:</strong> ${team.teamLeaderName || 'Unknown'} (${team.teamLeaderEmail || 'No email'})</p>
+                                    <p>${memberCount} member${memberCount !== 1 ? 's' : ''} • Created: ${new Date(team.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div class="team-status">
                                     <span class="status-badge ${team.megApproved ? 'status-approved' : 'status-pending'}">

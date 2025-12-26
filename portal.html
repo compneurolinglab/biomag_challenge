@@ -367,6 +367,107 @@
         .team-member-info .pending-note {
             color: #d97706;
             font-style: italic;
+        }
+
+        /* Team Name Section */
+        .team-name-section {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .team-name-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .team-name-label {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 0.9rem;
+        }
+
+        .team-name-value {
+            color: var(--orange);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.2rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .edit-btn:hover {
+            opacity: 1;
+        }
+
+        .team-name-edit {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .team-name-edit input {
+            flex: 1;
+            padding: 0.5rem 0.8rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .team-name-edit input:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 0.5rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .save-btn {
+            background: var(--orange);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: var(--orange-light);
+        }
+
+        .cancel-btn {
+            background: var(--gray-200);
+            color: var(--navy);
+        }
+
+        .cancel-btn:hover {
+            background: var(--gray-500);
+            color: white;
+        }
+
+        .team-id-display {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .team-id-display code {
+            background: var(--gray-200);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.7rem;
             margin-top: 0.5rem;
             font-size: 0.75rem;
         }
@@ -756,6 +857,22 @@
             <!-- Team Card -->
             <div class="card">
                 <h3>👥 Team Members</h3>
+                
+                <!-- Team Name Section -->
+                <div class="team-name-section">
+                    <div class="team-name-display" id="teamNameDisplay">
+                        <span class="team-name-label">Team Name:</span>
+                        <span class="team-name-value" id="teamNameValue">Not set</span>
+                        <button class="edit-btn" id="editTeamNameBtn" title="Edit team name">✏️</button>
+                    </div>
+                    <div class="team-name-edit hidden" id="teamNameEdit">
+                        <input type="text" id="teamNameInput" placeholder="Enter team name">
+                        <button class="save-btn" id="saveTeamNameBtn">Save</button>
+                        <button class="cancel-btn" id="cancelTeamNameBtn">Cancel</button>
+                    </div>
+                    <p class="team-id-display">Team ID: <code id="teamIdDisplay">-</code></p>
+                </div>
+
                 <div class="team-list" id="teamList">
                     <p class="no-team">No team members added yet</p>
                 </div>
@@ -1047,11 +1164,14 @@
                         // Store teamId for invitations
                         currentTeamId = data.teamId || user.uid;
                         
+                        // Display Team ID
+                        document.getElementById('teamIdDisplay').textContent = currentTeamId;
+                        
                         // Load team members by teamId
                         const { registeredMembers, pendingInvites } = await loadTeamMembers(currentTeamId, data.email);
                         renderTeamMembers(registeredMembers, pendingInvites);
                         
-                        // Fetch MEG data status from TEAM document (shared by all team members)
+                        // Fetch team data (name, MEG status) from TEAM document
                         const megStatus = document.getElementById('megStatus');
                         const megBadge = document.getElementById('megBadge');
                         
@@ -1060,6 +1180,14 @@
                             
                             if (teamDoc.exists()) {
                                 const teamData = teamDoc.data();
+                                
+                                // Display team name
+                                const teamNameValue = document.getElementById('teamNameValue');
+                                teamNameValue.textContent = teamData.teamName || 'Not set (click to add)';
+                                if (!teamData.teamName) {
+                                    teamNameValue.style.color = 'var(--gray-500)';
+                                    teamNameValue.style.fontStyle = 'italic';
+                                }
                                 
                                 if (teamData.megApproved) {
                                     megStatus.innerHTML = `<a href="${teamData.megLink || '#'}" target="_blank" style="color: var(--orange);">Click to download</a>`;
@@ -1112,6 +1240,77 @@
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error('Logout error:', error);
+            }
+        });
+
+        // Handle team name editing
+        document.getElementById('editTeamNameBtn').addEventListener('click', () => {
+            const display = document.getElementById('teamNameDisplay');
+            const edit = document.getElementById('teamNameEdit');
+            const input = document.getElementById('teamNameInput');
+            const currentName = document.getElementById('teamNameValue').textContent;
+            
+            input.value = currentName === 'Not set (click to add)' ? '' : currentName;
+            display.classList.add('hidden');
+            edit.classList.remove('hidden');
+            input.focus();
+        });
+
+        document.getElementById('cancelTeamNameBtn').addEventListener('click', () => {
+            document.getElementById('teamNameDisplay').classList.remove('hidden');
+            document.getElementById('teamNameEdit').classList.add('hidden');
+        });
+
+        document.getElementById('saveTeamNameBtn').addEventListener('click', async () => {
+            const newName = document.getElementById('teamNameInput').value.trim();
+            const saveBtn = document.getElementById('saveTeamNameBtn');
+            
+            if (!currentTeamId) {
+                showMessage('Error', 'Team ID not found. Please refresh the page.', 'error');
+                return;
+            }
+            
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+            
+            try {
+                const teamRef = doc(db, 'teams', currentTeamId);
+                const teamDoc = await getDoc(teamRef);
+                
+                if (teamDoc.exists()) {
+                    await updateDoc(teamRef, { teamName: newName });
+                } else {
+                    // Create team document if it doesn't exist (for legacy users)
+                    const userDoc = await getDoc(doc(db, 'users', currentUserId));
+                    const userData = userDoc.exists() ? userDoc.data() : {};
+                    
+                    await setDoc(teamRef, {
+                        teamLeaderId: currentUserId,
+                        teamLeaderEmail: userData.email || '',
+                        teamLeaderName: `${userData.title || ''} ${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown',
+                        teamName: newName,
+                        megApproved: false,
+                        megLink: '',
+                        createdAt: userData.createdAt || new Date().toISOString()
+                    });
+                }
+                
+                // Update display
+                const teamNameValue = document.getElementById('teamNameValue');
+                teamNameValue.textContent = newName || 'Not set (click to add)';
+                teamNameValue.style.color = newName ? 'var(--orange)' : 'var(--gray-500)';
+                teamNameValue.style.fontStyle = newName ? 'normal' : 'italic';
+                
+                document.getElementById('teamNameDisplay').classList.remove('hidden');
+                document.getElementById('teamNameEdit').classList.add('hidden');
+                
+                showMessage('Success', 'Team name updated!', 'success');
+            } catch (error) {
+                console.error('Error saving team name:', error);
+                showMessage('Error', 'Failed to save team name. Please try again.', 'error');
+            } finally {
+                saveBtn.textContent = 'Save';
+                saveBtn.disabled = false;
             }
         });
 

@@ -959,6 +959,12 @@
                     <p class="hint" style="margin-top: -1rem; margin-bottom: 1.5rem;">Password must be at least 6 characters. You'll use this to log in to your portal.</p>
 
                     <div class="form-group">
+                        <label for="teamName">Team Name <span class="optional">(optional)</span></label>
+                        <input type="text" id="teamName" name="teamName" placeholder="e.g., Brain Decoders, NeuroLab Team">
+                        <p class="hint">Give your team a creative name! You can change this later in your portal.</p>
+                    </div>
+
+                    <div class="form-group">
                         <label for="research">Research Interest <span class="required">*</span></label>
                         <textarea id="research" name="research" required placeholder="Briefly describe your research interests"></textarea>
                     </div>
@@ -1185,6 +1191,9 @@
                 }
             });
 
+            // Get team name
+            const teamName = document.getElementById('teamName').value.trim();
+
             // Collect form data (user-level info only, no MEG data - that's team-level)
             const formData = {
                 title: document.getElementById('title').value,
@@ -1227,6 +1236,7 @@
                         teamLeaderId: user.uid,
                         teamLeaderEmail: formData.email,
                         teamLeaderName: `${formData.title || ''} ${formData.firstName} ${formData.lastName}`.trim(),
+                        teamName: teamName || '',
                         megApproved: false,
                         megLink: '',
                         createdAt: new Date().toISOString()
