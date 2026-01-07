@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIOMAG 2026 - LPP Decoding Challenge</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <title>Admin Panel - BIOMAG 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --navy: #263B55;
-            --navy-dark: #1a2a3d;
-            --navy-light: #3a5577;
-            --orange: #D35400;
-            --orange-light: #e67e22;
-            --orange-glow: rgba(211, 84, 0, 0.15);
+            --navy: #1a2332;
+            --orange: #c75b2a;
+            --orange-light: #d4845c;
             --cream: #faf8f5;
-            --white: #ffffff;
-            --gray-100: #f7f7f7;
-            --gray-200: #e8e8e8;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
             --gray-500: #6b7280;
-        } 
+            --green: #22c55e;
+            --red: #ef4444;
+        }
 
         * {
             margin: 0;
@@ -28,1297 +24,786 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: 'DM Sans', sans-serif;
-            color: var(--navy);
-            line-height: 1.7;
             background: var(--cream);
+            min-height: 100vh;
         }
 
-        h1, h2, h3, h4 {
-            font-family: 'Playfair Display', serif;
-            line-height: 1.2;
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--gray-200);
-            transition: all 0.3s ease;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Header */
+        .admin-header {
+            background: var(--navy);
+            color: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .nav-logo {
-            font-family: 'Playfair Display', serif;
+        .admin-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--navy);
-            text-decoration: none;
-        }
-        
-        .nav-logo span {
-            color: var(--orange);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--navy);
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--orange);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--orange);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .nav-cta {
-            background: var(--orange);
-            color: var(--white) !important;
-            padding: 0.6rem 1.5rem;
-            border-radius: 30px;
-            font-weight: 600;
-        }
-
-        .nav-cta:hover {
-            background: var(--orange-light);
-        }
-
-        .nav-cta::after {
-            display: none !important;
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 8rem 2rem 4rem;
-            background: linear-gradient(135deg, var(--cream) 0%, #e8e4df 100%);
-            position: relative;
-            overflow: hidden;
+            gap: 0.5rem;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 80%;
-            height: 150%;
-            background: radial-gradient(ellipse, var(--orange-glow) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .hero-content {
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .hero-text h1 {
-            font-size: 3.5rem;
-            color: var(--navy);
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-text h1 span {
-            color: var(--orange);
-        }
-
-        .hero-text p {
-            font-size: 1.25rem;
-            color: var(--gray-500);
-            margin-bottom: 2rem;
-            max-width: 500px;
-        }
-
-        .hero-logo {
-            max-width: 100%;
-            height: auto;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-primary {
+        .admin-header h1 span {
             background: var(--orange);
-            color: var(--white);
-            box-shadow: 0 4px 20px rgba(211, 84, 0, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
 
-        .btn-primary:hover {
-            background: var(--orange-light);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(211, 84, 0, 0.4);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--navy);
-            border: 2px solid var(--navy);
-            margin-left: 1rem;
-        }
-
-        .btn-secondary:hover {
-            background: var(--navy);
-            color: var(--white);
-        }
-
-        /* Sections */
-        section {
-            padding: 6rem 2rem;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.8rem;
-            color: var(--navy);
-            margin-bottom: 1rem;
-        }
-
-        .section-title p {
-            color: var(--gray-500);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* About Section */
-        .about {
-            background: var(--white);
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: start;
-        }
-
-        .about-card {
-            background: var(--cream);
-            padding: 2.5rem;
-            border-radius: 20px;
-            border-left: 4px solid var(--orange);
-        }
-
-        .about-card h3 {
-            font-size: 1.5rem;
-            color: var(--navy);
-            margin-bottom: 1rem;
-        }
-
-        .about-card p {
-            color: var(--gray-500);
-            line-height: 1.8;
-        }
-
-        /* Competition Info */
-        .competition {
-            background: var(--navy);
-            color: var(--white);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .competition::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            pointer-events: none;
-        }
-
-        .competition .section-title h2 {
-            color: var(--white);
-        }
-
-        .competition .section-title p {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .aims-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .aim-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .aim-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-5px);
-        }
-
-        .aim-card .icon {
-            width: 60px;
-            height: 60px;
-            background: var(--orange);
-            border-radius: 12px;
+        .admin-user {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .aim-card h4 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .aim-card p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.95rem;
-        }
-
-        /* Timeline Section */
-        .timeline {
-            background: var(--cream);
-        }
-
-        .timeline-container {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .timeline-container::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--orange), var(--navy));
-            border-radius: 3px;
-            z-index: 0;
-        }
-
-        .timeline-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.8rem;
-            position: relative;
-        }
-
-        .timeline-item:nth-child(odd) {
-            flex-direction: row;
-        }
-
-        .timeline-content {
-            width: calc(50% - 40px);
-            background: var(--white);
-            padding: 1.5rem 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            position: relative;
-        }
-
-        .timeline-item:nth-child(odd) .timeline-content {
-            margin-left: calc(50% + 25px);
-        }
-
-        .timeline-item:nth-child(even) .timeline-content {
-            margin-right: calc(50% + 25px);
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            background: var(--orange);
-            border-radius: 50%;
-            border: 4px solid var(--cream);
-            z-index: 1;
-        }
-
-        .timeline-date {
-            font-weight: 700;
-            color: var(--orange);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .timeline-content h4 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--navy);
-        }
-
-        /* Data Access */
-        .data-access {
-            background: var(--white);
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .step-card {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .step-number {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--orange), var(--orange-light));
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 auto 1.5rem;
-        }
-
-        .step-card h4 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--navy);
-        }
-
-        .step-card p {
-            color: var(--gray-500);
-            font-size: 0.95rem;
-        }
-
-        /* Evaluation Criteria */
-        .evaluation {
-            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
-            color: var(--white);
-        }
-
-        .evaluation .section-title h2,
-        .evaluation .section-title p {
-            color: var(--white);
-        }
-
-        .criteria-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .criteria-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: flex;
-            align-items: flex-start;
             gap: 1rem;
         }
 
-        .criteria-points {
+        .admin-user span {
+            color: var(--gray-200);
+            font-size: 0.9rem;
+        }
+
+        .portal-link {
             background: var(--orange);
-            color: var(--white);
+            color: white;
             padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            white-space: nowrap;
-        }
-
-        .criteria-card h4 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .criteria-card p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-        }
-
-        /* Prizes */
-        .prizes {
-            background: var(--cream);
-        }
-
-        .prizes-grid {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .prize-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 3rem 2.5rem;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            min-width: 250px;
-        }
-
-        .prize-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .prize-place {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-        }
-
-        .prize-medal {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .prize-amount {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--navy);
-        }
-
-        .prize-card:nth-child(1) .prize-amount {
-            color: var(--orange);
-        }
-
-        /* Organizers */
-        .organizers {
-            background: var(--white);
-        }
-
-        .organizers-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 2rem;
-            justify-items: center;
-        }
-
-        @media (max-width: 900px) {
-            .organizers-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .organizers-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .organizer-card {
-            text-align: center;
-            padding: 1.5rem;
-        }
-
-        .organizer-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            overflow: hidden;
-            border: 3px solid var(--orange);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .organizer-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .organizer-avatar.placeholder {
-            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .organizer-avatar.placeholder span {
-            color: var(--white);
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        .organizer-card h4 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 0.3rem;
-        }
-
-        .organizer-card p {
-            color: var(--gray-500);
+            border-radius: 6px;
+            text-decoration: none;
             font-size: 0.85rem;
-            line-height: 1.4;
+            font-weight: 600;
+            transition: background 0.2s;
         }
 
-        /* Footer */
-        footer {
-            background: var(--navy-dark);
-            color: var(--white);
-            padding: 4rem 2rem;
-            text-align: center;
+        .portal-link:hover {
+            background: var(--orange-light);
         }
 
-        .footer-logo {
-            height: 80px;
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--gray-500);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Main Content */
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
-        .footer-text {
-            color: rgba(255, 255, 255, 0.6);
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card p {
+            color: var(--gray-500);
             font-size: 0.9rem;
         }
 
-        .footer-text a {
-            color: var(--orange);
-            text-decoration: none;
+        /* Teams List */
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .supporters {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        .teams-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .supporters h4 {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .team-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .team-info h4 {
+            font-size: 1.1rem;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .team-info p {
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+
+        .team-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Team Members */
+        .team-members {
             margin-bottom: 1rem;
         }
 
-        /* Mobile Menu */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
+        .team-members h5 {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .menu-toggle span {
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .member-item {
+            background: var(--gray-100);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .member-item strong {
+            color: var(--navy);
+        }
+
+        .member-item span {
+            color: var(--gray-500);
             display: block;
-            width: 25px;
-            height: 2px;
-            background: var(--navy);
-            margin: 5px 0;
-            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .member-item .leader-badge {
+            background: var(--orange);
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Actions */
+        .team-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .link-input {
+            flex: 1;
+            min-width: 150px;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .link-input:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #16a34a;
+        }
+
+        .btn-revoke {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-revoke:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-500);
+            color: white;
+        }
+
+        /* Loading & Access Denied */
+        .loading-state, .access-denied {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+
+        .loading-state p {
+            color: var(--gray-500);
+            font-size: 1.1rem;
+        }
+
+        .access-denied h2 {
+            color: var(--red);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .access-denied p {
+            color: var(--gray-500);
+            margin-bottom: 1.5rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Message Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--green);
+        }
+
+        .toast.error {
+            background: var(--red);
+        }
+
+        /* Research Interest */
+        .research-interest {
+            background: var(--cream);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
+            font-style: italic;
         }
 
         /* Responsive */
-        @media (max-width: 968px) {
-            .hero-content {
-                grid-template-columns: 1fr;
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
                 text-align: center;
             }
 
-            .hero-text h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-text p {
-                margin: 0 auto 2rem;
-            }
-
-            .hero-logo {
-                max-width: 400px;
-                margin: 0 auto;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: var(--white);
+            .team-header {
                 flex-direction: column;
-                padding: 1rem 2rem;
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                gap: 1rem;
             }
 
-            .nav-links.active {
-                display: flex;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .timeline-container::before {
-                left: 20px;
-            }
-
-            .timeline-item,
-            .timeline-item:nth-child(odd) {
+            .team-actions {
                 flex-direction: column;
-                align-items: flex-start;
-                padding-left: 50px;
             }
 
-            .timeline-content,
-            .timeline-item:nth-child(odd) .timeline-content,
-            .timeline-item:nth-child(even) .timeline-content {
+            .link-input {
                 width: 100%;
-                margin: 0;
-            }
-
-            .timeline-dot {
-                left: 20px;
-            }
-
-            .btn-secondary {
-                margin-left: 0;
-                margin-top: 1rem;
             }
         }
-
-        @media (max-width: 600px) {
-            .section-title h2 {
-                font-size: 2rem;
-            }
-
-            .hero-text h1 {
-                font-size: 2rem;
-            }
-
-            .prizes-grid {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .prize-card:nth-child(1) {
-                transform: none;
-                order: -1;
-            }
-
-            .prize-card:nth-child(1):hover {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--cream);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--navy-light);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--navy);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="#" class="nav-logo">BIOMAG<span>2026</span></a>
-            <button class="menu-toggle" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#about">About</a></li>
-                <li><a href="#competition">Competition</a></li>
-                <li><a href="#timeline">Timeline</a></li>
-                <li><a href="#data">Data Access</a></li>
-                <li><a href="#evaluation">Evaluation</a></li>
-                <li><a href="#prizes">Prizes</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html" class="nav-cta">Register</a></li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state">
+        <p>Loading admin panel...</p>
+    </div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1>Take the <span>Challenge!</span></h1>
-                <p>Register to compete in the BIOMAG 2026 Le Petit Prince (LPP) Decoding Challenge! Work with naturalistic MEG and fMRI data to decode brain activity, with a focus on cross-modality transfer and robust generalization across subjects.</p>
-                <a href="register.html" class="btn btn-primary">Register Now</a>
-                <a href="#about" class="btn btn-secondary">Learn More</a>
-            </div>
-            <div class="hero-image">
-                <img src="pics/logo.png" alt="BIOMAG 2026 LPP Decoding Challenge" class="hero-logo">
-            </div>
-        </div>
-    </section>
+    <!-- Access Denied -->
+    <div id="accessDenied" class="access-denied hidden">
+        <h2>🚫 Access Denied</h2>
+        <p>You don't have permission to access the admin panel.</p>
+        <a href="portal.html" class="btn btn-secondary">Go to Portal</a>
+    </div>
 
-    <!-- About Section -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="section-title">
-                <h2>Competition Information</h2>
-                <p>Explore cutting-edge brain data analysis and advance neuroscience</p>
+    <!-- Main Admin Content -->
+    <div id="adminContent" class="hidden">
+        <header class="admin-header">
+            <h1>BIOMAG 2026 <span>ADMIN</span></h1>
+            <div class="admin-user">
+                <a href="portal.html" class="portal-link">👤 My Portal</a>
+                <span id="adminEmail"></span>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
             </div>
-            <div class="about-content">
-                <div class="about-card">
-                    <h3>Background</h3>
-                    <p>The <strong>BIOMAG 2026 Data Challenge</strong> is an official satellite event of the BIOMAG 2026 conference in Beijing, China. The challenge aims to promote reproducible and generalizable methods at the intersection of natural language processing, cognitive neuroscience, and brain decoding.</p>
-                    <br>
-                    <p>Recent advances in large language models (LLMs) have opened new frontiers for understanding how the brain processes language. By aligning neural representations with computational language models, researchers can now decode semantic content from brain activity with unprecedented accuracy—making this an exciting time to explore cross-modal and cross-subject brain decoding.</p>
+        </header>
+
+        <div class="admin-container">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalTeams">0</h3>
+                    <p>Total Teams</p>
                 </div>
-                <div class="about-card">
-                    <h3>Dataset</h3>
-                    <p>The challenge uses brain recordings acquired while participants listened to the <strong>Chinese translation</strong> of <em>The Little Prince</em> as a continuous narrative. This design captures neural responses in a setting that closely reflects real-world comprehension. The fMRI data are part of the widely used <em>Le Petit Prince</em> multilingual naturalistic corpus.</p>
-                    <br>
-                    <p>Importantly, the <strong>MEG data are newly collected</strong> using exactly the same Chinese stimulus materials as fMRI! We are thrilled to share this unique dataset with participants. This enables direct investigation of cross-modality alignment (MEG ↔ fMRI) and supports models that generalize across both subjects and measurement modalities.</p>
+                <div class="stat-card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="approvedTeams">0</h3>
+                    <p>Approved Teams</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pendingTeams">0</h3>
+                    <p>Pending Approval</p>
                 </div>
             </div>
-            
-            <!-- Recording Systems subsection -->
-            <h3 style="text-align: center; margin-top: 3rem; margin-bottom: 2rem; color: var(--navy); font-family: 'Playfair Display', serif; font-size: 1.8rem;">Recording Systems</h3>
-            <div class="about-content">
-                <div class="about-card">
-                    <h3 style="color: var(--orange);"> fMRI</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy); width: 40%;">Scanner</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">3T GE Discovery MR750</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Head Coil</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">32-channel</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Location</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">Jiangsu Normal University, Xuzhou, Jiangsu, China</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Participants</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">35 (15 female), Mean age: 19.9</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Stimuli</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">The Little Prince CN audiobook</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Duration</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">5954s (~99 min)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">TR / TEs</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">2000 ms / 2.8, 27.5, 43 ms</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Resolution</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">3.75 × 3.75 × 3.8 mm</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="about-card">
-                    <h3 style="color: var(--orange);"> MEG</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy); width: 29%;">System</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">TRIUX™ neo 306-channel</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Channels</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">102 mag + 204 grad</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Location</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">Institute of Science and Technology for Brain-Inspired Intelligence, Fudan University, Shanghai, China</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Participants</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">32 (16 female), Mean age: 26.6</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Stimuli</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">The Little Prince CN audiobook</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Duration</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">5954s (~99 min)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">Sampling Rate</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">100 Hz</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.5rem 0; font-weight: 600; color: var(--navy);">EOG / HPI</td>
-                            <td style="padding: 0.5rem 0; color: var(--gray-500);">2 channels / 5 coils</td>
-                        </tr>
-                    </table>
-                </div>
+
+            <!-- Teams List -->
+            <h2 class="section-title">📋 Registered Teams</h2>
+            <div class="teams-list" id="teamsList">
+                <!-- Teams will be loaded here -->
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Competition Goals -->
-    <section class="competition" id="competition">
-        <div class="container">
-            <div class="section-title">
-                <h2>Aim of the Competition</h2>
-            </div>
-            <div class="aims-grid">
-                <div class="aim-card">
-                    <div class="icon">🎯</div>
-                    <h4>Develop Generalizable Decoding Methods</h4>
-                    <p>Advance decoding approaches that extract meaningful information from MEG and fMRI signals under realistic experimental conditions. Emphasis is placed on methods that generalize across individuals and are robust to variability in neural responses.</p>
-                </div>
-                <div class="aim-card">
-                    <div class="icon">🔄</div>
-                    <h4>Enable Cross-Modality Representation Learning</h4>
-                    <p>By providing MEG and fMRI data collected with identical stimuli and timing, the challenge promotes methods that align, transfer, or jointly model neural representations across modalities. Leverage the complementary temporal and spatial properties of MEG and fMRI.</p>
-                </div>
-                <div class="aim-card">
-                    <div class="icon">📊</div>
-                    <h4>Benchmark Decoding with Naturalistic Stimulation</h4>
-                    <p>Using continuous narrative stimuli as a shared paradigm, the competition provides a standardized benchmark for evaluating decoding methods on complex, time-varying brain data. The focus remains on methodological generality rather than task-specific tuning.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
-    <!-- Timeline -->
-    <section class="timeline" id="timeline">
-        <div class="container">
-            <div class="section-title">
-                <h2>Timeline</h2>
-                <p>Save the Key dates for the BIOMAG 2026 Data Challenge</p>
-            </div>
-            <div class="timeline-container">
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">Late January 2026</div>
-                        <h4>Batch 1 Data Release</h4>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">June 2026</div>
-                        <h4>First (Draft) Report Due (preregistration)</h4>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">June 2026</div>
-                        <h4>Batch 2 Data Release</h4>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">July 2026</div>
-                        <h4>Replication Report Due</h4>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">August 2026</div>
-                        <h4>Competition Scoring</h4>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">BIOMAG 2026</div>
-                        <h4>Winner Announced @ Beijing</h4>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-    <!-- Data Access -->
-    <section class="data-access" id="data">
-        <div class="container">
-            <div class="section-title">
-                <h2>How to Access the Data</h2>
-                <p>Follow these steps to get started with the challenge</p>
-            </div>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h4>Register</h4>
-                    <p>Create your account and complete the registration form</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h4>Login to Portal</h4>
-                    <p>Access your personal challenge portal</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h4>Download Data</h4>
-                    <p>Get MEG and fMRI data bundles from your portal</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">4</div>
-                    <h4>Submit Report</h4>
-                    <p>Submit your draft and final reports through the portal</p>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 3rem;">
-                <a href="register.html" class="btn btn-primary">Access Data Portal</a>
-            </div>
-        </div>
-    </section>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMSJBFzhcb9Dm0hv085xG-PSE5J9G748A",
+            authDomain: "lpp-challenge.firebaseapp.com",
+            projectId: "lpp-challenge",
+            storageBucket: "lpp-challenge.firebasestorage.app",
+            messagingSenderId: "67639447302",
+            appId: "1:67639447302:web:bbd130790fd39013f9d887"
+        };
 
-    <!-- Evaluation Criteria -->
-    <section class="evaluation" id="evaluation">
-        <div class="container">
-            <div class="section-title">
-                <h2>Evaluation Criteria</h2>
-                <p>How submissions will be scored (Total: 100 points)</p>
-            </div>
-            <div class="criteria-grid">
-                <div class="criteria-card">
-                    <div class="criteria-points">20 pts</div>
-                    <div>
-                        <h4>Relevance of the Measure</h4>
-                        <p>Demonstrate a clear rationale for the chosen decoding method.</p>
-                    </div>
-                </div>
-                <div class="criteria-card">
-                    <div class="criteria-points">20 pts</div>
-                    <div>
-                        <h4>Statistical Assessment</h4>
-                        <p>Use appropriate statistical tests to evaluate the significance of the findings.</p>
-                    </div>
-                </div>
-                <div class="criteria-card">
-                    <div class="criteria-points">20 pts</div>
-                    <div>
-                        <h4>Interpretation</h4>
-                        <p>Clearly interpret the outcomes in the context of cross-subject decoding. Discuss any unexpected findings.</p>
-                    </div>
-                </div>
-                <div class="criteria-card">
-                    <div class="criteria-points">15 pts</div>
-                    <div>
-                        <h4>Concerns on Interpretation</h4>
-                        <p>Compare decoding results with fMRI and MEG.</p>
-                    </div>
-                </div>
-                <div class="criteria-card">
-                    <div class="criteria-points">10 pts</div>
-                    <div>
-                        <h4>Clarity and Quality</h4>
-                        <p>Present a well-organized and clear report. Include relevant figures and replication-friendly code with clear comments.</p>
-                    </div>
-                </div>
-                <div class="criteria-card">
-                    <div class="criteria-points">15 pts</div>
-                    <div>
-                        <h4>Reliability and Replication</h4>
-                        <p>Describe measures taken to address reliability concerns. Replicate findings on the second half of the dataset.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    <!-- Prizes -->
-    <section class="prizes" id="prizes">
-        <div class="container">
-            <div class="section-title">
-                <h2>Prizes</h2>
-                <p>Recognition for the top performing teams</p>
-            </div>
-            <div class="prizes-grid">
-                <div class="prize-card">
-                    <div class="prize-place">First Place</div>
-                    <div class="prize-medal">💸</div>
-                    <div class="prize-amount">USD 1,000</div>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-place">Second Place</div>
-                    <div class="prize-medal">💸</div>
-                    <div class="prize-amount">USD 500</div>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-place">Third Place</div>
-                    <div class="prize-medal">💸</div>
-                    <div class="prize-amount">USD 250</div>
-                </div>
-            </div>
-        </div>
-    </section>
+        // ⚠️ ADMIN EMAIL WHITELIST - Only these emails can access admin panel
+        const ADMIN_EMAILS = [
+            'jixingli@cityu.edu.hk',
+            'yuhan.huang112211@gmail.com',
+            'zhengwu.ma@my.cityu.edu.hk',
+            'zhengwumaa@gmail.com',
+            'yuhan.huang@my.cityu.edu.hk'
+            // Add more admin emails here
+        ];
 
-    <!-- Submission Guidelines -->
-    <section class="about" id="submission">
-        <div class="container">
-            <div class="section-title">
-                <h2>How to Submit</h2>
-                <p>Submission requirements and guidelines</p>
-            </div>
-            <div class="about-content">
-                <div class="about-card">
-                    <h3>Report Requirements</h3>
-                    <p>Teams are required to submit a written report supplemented by figures and codes (max 8 pages). The report should comprehensively address all the evaluation criteria. The provided code should be replication-friendly and with clear comments.</p>
-                </div>
-                <div class="about-card">
-                    <h3>Key Considerations</h3>
-                    <p>Make explicit how concerns on overfitting and reliability were addressed (e.g., consider developing measures on one part of the data set and test on the second part). Address potential concerns complicating the interpretation (e.g., field spread and event-related fields). At the end of the challenge, all submitted materials will be made public.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        // DOM Elements
+        const loadingState = document.getElementById('loadingState');
+        const accessDenied = document.getElementById('accessDenied');
+        const adminContent = document.getElementById('adminContent');
+        const adminEmail = document.getElementById('adminEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
 
-    <!-- Organizers -->
-    <section class="organizers" id="organizers">
-        <div class="container">
-            <div class="section-title">
-                <h2>Organizers</h2>
-                <p>Meet the team behind BIOMAG 2026 LPP Decoding Challenge</p>
-            </div>
-            <div class="organizers-grid">
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/jixing.jpg" alt="Jixing Li">
-                    </div>
-                    <h4>Jixing Li</h4>
-                    <p>City University of Hong Kong</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/zhengwu.jpg" alt="Zhengwu Ma">
-                    </div>
-                    <h4>Zhengwu Ma</h4>
-                    <p>City University of Hong Kong</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/chengcheng.jpg" alt="Chengcheng Wang">
-                    </div>
-                    <h4>Chengcheng Wang</h4>
-                    <p>City University of Hong Kong</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/yuhan.jpg" alt="Yuhan Huang">
-                    </div>
-                    <h4>Yuhan Huang</h4>
-                    <p>City University of Hong Kong</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/yike.jpg" alt="Yuhan Huang">
-                    </div>
-                    <h4>Yike Wang</h4>
-                    <p>City University of Hong Kong</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/lingliu.jpg" alt="Ling Liu">
-                    </div>
-                    <h4>Ling Liu</h4>
-                    <p>Beijing Language and Culture University, local committee of BIOMAG2026</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/shaonan.jpg" alt="Shaonan Wang">
-                    </div>
-                    <h4>Shaonan Wang</h4>
-                    <p>The Hong Kong Polytechnic University</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/qixuan.jpg" alt="Qixuan Wang">
-                    </div>
-                    <h4>Qixuan Wang</h4>
-                    <p>Fudan University</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/qianzhou.jpg" alt="Qian Zhou">
-                    </div>
-                    <h4>Qian Zhou</h4>
-                    <p>Fudan University</p>
-                </div>
-                <div class="organizer-card">
-                    <div class="organizer-avatar">
-                        <img src="pics/profile/yuwei.jpg" alt="Yuwei Jiang">
-                    </div>
-                    <h4>Yuwei Jiang</h4>
-                    <p>Fudan University</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="competition" id="register">
-        <div class="container" style="text-align: center;">
-            <h2 style="font-size: 2.5rem; color: white; margin-bottom: 1rem;">Ready to Take the Challenge?</h2>
-            <p style="color: rgba(255,255,255,0.8); font-size: 1.2rem; margin-bottom: 2rem;">Join researchers worldwide in this exciting data challenge</p>
-            <a href="register.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 1.2rem 3rem;">Register Now</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p class="footer-text">
-            BIOMAG 2026 Decoding Data Challenge<br>
-            <a href="mailto:lpp.challenge@gmail.com">Contact Us</a>
-        </p>
-    </footer>
-
-    <script>
-        function toggleMenu() {
-            document.getElementById('navLinks').classList.toggle('active');
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
-        // Smooth scroll for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    document.getElementById('navLinks').classList.remove('active');
+        // Load all teams and users
+        async function loadTeamsData() {
+            const teamsList = document.getElementById('teamsList');
+            teamsList.innerHTML = '<p>Loading teams...</p>';
+
+            try {
+                // Get all teams
+                const teamsSnapshot = await getDocs(collection(db, 'teams'));
+                const teamsMap = {};
+                
+                teamsSnapshot.forEach(doc => {
+                    teamsMap[doc.id] = { id: doc.id, ...doc.data() };
+                });
+
+                // Get all users
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const users = [];
+                
+                usersSnapshot.forEach(doc => {
+                    users.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Group users by teamId and find orphan users (no team document)
+                const usersByTeam = {};
+                const orphanUsers = [];
+                
+                users.forEach(user => {
+                    const teamId = user.teamId || user.id;
+                    if (!usersByTeam[teamId]) {
+                        usersByTeam[teamId] = [];
+                    }
+                    usersByTeam[teamId].push(user);
+                    
+                    // Check if this user should have a team document but doesn't
+                    if (!teamsMap[teamId] && (user.isTeamLeader || !user.teamId)) {
+                        orphanUsers.push(user);
+                    }
+                });
+
+                // Create team entries for orphan users (users without team documents)
+                const allTeams = Object.values(teamsMap);
+                
+                // Add orphan users as "virtual teams"
+                orphanUsers.forEach(user => {
+                    const teamId = user.teamId || user.id;
+                    if (!teamsMap[teamId]) {
+                        allTeams.push({
+                            id: teamId,
+                            teamLeaderId: user.id,
+                            teamLeaderEmail: user.email,
+                            teamLeaderName: `${user.title || ''} ${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
+                            megApproved: user.megApproved || false,
+                            megLink: user.megLink || '',
+                            createdAt: user.createdAt || new Date().toISOString(),
+                            isLegacy: true // Flag to indicate this needs team doc creation
+                        });
+                    }
+                });
+
+                // Update stats
+                document.getElementById('totalTeams').textContent = allTeams.length;
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('approvedTeams').textContent = allTeams.filter(t => t.megApproved).length;
+                document.getElementById('pendingTeams').textContent = allTeams.filter(t => !t.megApproved).length;
+
+                // Render teams
+                if (allTeams.length === 0) {
+                    teamsList.innerHTML = '<p style="color: var(--gray-500); text-align: center; padding: 2rem;">No teams registered yet.</p>';
+                    return;
                 }
-            });
+
+                teamsList.innerHTML = allTeams.map(team => {
+                    const teamMembers = usersByTeam[team.id] || [];
+                    const memberCount = teamMembers.length;
+                    const displayTeamName = team.teamName || 'Unnamed Team';
+                    const displayTeamNumber = team.teamNumber || `(Legacy: ${team.id.substring(0, 8)}...)`;
+                    
+                    return `
+                        <div class="team-card" data-team-id="${team.id}">
+                            <div class="team-header">
+                                <div class="team-info">
+                                    <h4>🏷️ ${displayTeamName} <span style="background: var(--orange); color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; margin-left: 0.5rem;">#${displayTeamNumber}</span></h4>
+                                    <p><strong>Leader:</strong> ${team.teamLeaderName || 'Unknown'} (${team.teamLeaderEmail || 'No email'})</p>
+                                    <p>${memberCount} member${memberCount !== 1 ? 's' : ''} • Created: ${new Date(team.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <div class="team-status">
+                                    <span class="status-badge ${team.megApproved ? 'status-approved' : 'status-pending'}">
+                                        ${team.megApproved ? '✓ Approved' : '⏳ Pending'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="team-members">
+                                <h5>Team Members</h5>
+                                <div class="members-grid">
+                                    ${teamMembers.map(member => `
+                                        <div class="member-item">
+                                            <strong>${member.title || ''} ${member.firstName || ''} ${member.lastName || ''}</strong>
+                                            ${member.isTeamLeader ? '<span class="leader-badge">Leader</span>' : ''}
+                                            <span>${member.email}</span>
+                                            <span>${member.affiliation || 'No affiliation'} • ${member.position || 'No position'}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            ${teamMembers[0]?.research ? `
+                                <div class="research-interest">
+                                    <strong>Research Interest:</strong> ${teamMembers[0].research}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="team-actions">
+                                <div class="action-row">
+                                    <label style="font-size: 0.8rem; color: var(--gray-500); margin-right: 0.5rem;">Team Name:</label>
+                                    <input type="text" class="link-input" id="teamname-${team.id}" 
+                                        placeholder="Enter team name" 
+                                        value="${team.teamName || ''}" style="flex: 1;">
+                                    <button class="btn btn-secondary" onclick="saveTeamName('${team.id}')" style="white-space: nowrap;">Save Name</button>
+                                </div>
+                                <div class="action-row" style="margin-top: 0.5rem;">
+                                    <label style="font-size: 0.8rem; color: var(--gray-500); margin-right: 0.5rem;">MEG Link:</label>
+                                    <input type="text" class="link-input" id="link-${team.id}" 
+                                        placeholder="MEG Download Link (Dropbox/Baidu)" 
+                                        value="${team.megLink || ''}" style="flex: 1;">
+                                    ${team.megApproved ? `
+                                        <button class="btn btn-revoke" onclick="revokeAccess('${team.id}', ${team.isLegacy || false})">Revoke Access</button>
+                                    ` : `
+                                        <button class="btn btn-approve" onclick="approveAccess('${team.id}', ${team.isLegacy || false})">Approve & Send Link</button>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading teams:', error);
+                teamsList.innerHTML = '<p style="color: var(--red);">Error loading teams. Please refresh the page.</p>';
+            }
+        }
+
+        // Approve team access
+        window.approveAccess = async function(teamId, isLegacy = false) {
+            const linkInput = document.getElementById(`link-${teamId}`);
+            const megLink = linkInput.value.trim();
+
+            if (!megLink) {
+                showToast('Please enter a download link first!', 'error');
+                return;
+            }
+
+            try {
+                const teamRef = doc(db, 'teams', teamId);
+                const teamDoc = await getDoc(teamRef);
+                
+                if (teamDoc.exists()) {
+                    // Team document exists, just update it
+                    await updateDoc(teamRef, {
+                        megApproved: true,
+                        megLink: megLink,
+                        approvedAt: new Date().toISOString()
+                    });
+                } else {
+                    // Legacy user - create team document first
+                    // Find the user to get their info
+                    const userDoc = await getDoc(doc(db, 'users', teamId));
+                    const userData = userDoc.exists() ? userDoc.data() : {};
+                    
+                    await setDoc(teamRef, {
+                        teamLeaderId: teamId,
+                        teamLeaderEmail: userData.email || '',
+                        teamLeaderName: `${userData.title || ''} ${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown',
+                        megApproved: true,
+                        megLink: megLink,
+                        createdAt: userData.createdAt || new Date().toISOString(),
+                        approvedAt: new Date().toISOString()
+                    });
+                    
+                    // Also update the user's teamId if not set
+                    if (!userData.teamId) {
+                        await updateDoc(doc(db, 'users', teamId), {
+                            teamId: teamId,
+                            isTeamLeader: true
+                        });
+                    }
+                }
+
+                showToast('Team approved! All members can now access the download link.', 'success');
+                loadTeamsData(); // Refresh the list
+            } catch (error) {
+                console.error('Error approving team:', error);
+                showToast('Error approving team. Please try again.', 'error');
+            }
+        };
+
+        // Revoke team access
+        window.revokeAccess = async function(teamId, isLegacy = false) {
+            if (!confirm('Are you sure you want to revoke access for this team?')) {
+                return;
+            }
+
+            try {
+                const teamRef = doc(db, 'teams', teamId);
+                const teamDoc = await getDoc(teamRef);
+                
+                if (teamDoc.exists()) {
+                    await updateDoc(teamRef, {
+                        megApproved: false
+                    });
+                } else {
+                    // For legacy users without team doc, we need to create one first
+                    const userDoc = await getDoc(doc(db, 'users', teamId));
+                    const userData = userDoc.exists() ? userDoc.data() : {};
+                    
+                    await setDoc(teamRef, {
+                        teamLeaderId: teamId,
+                        teamLeaderEmail: userData.email || '',
+                        teamLeaderName: `${userData.title || ''} ${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown',
+                        megApproved: false,
+                        megLink: '',
+                        createdAt: userData.createdAt || new Date().toISOString()
+                    });
+                }
+
+                showToast('Access revoked.', 'success');
+                loadTeamsData(); // Refresh the list
+            } catch (error) {
+                console.error('Error revoking access:', error);
+                showToast('Error revoking access. Please try again.', 'error');
+            }
+        };
+
+        // Save team name
+        window.saveTeamName = async function(teamId) {
+            const input = document.getElementById(`teamname-${teamId}`);
+            const newName = input.value.trim();
+            
+            try {
+                const teamRef = doc(db, 'teams', teamId);
+                const teamDoc = await getDoc(teamRef);
+                
+                if (teamDoc.exists()) {
+                    await updateDoc(teamRef, { teamName: newName });
+                } else {
+                    // Create team document for legacy users
+                    const userDoc = await getDoc(doc(db, 'users', teamId));
+                    const userData = userDoc.exists() ? userDoc.data() : {};
+                    
+                    await setDoc(teamRef, {
+                        teamLeaderId: teamId,
+                        teamLeaderEmail: userData.email || '',
+                        teamLeaderName: `${userData.title || ''} ${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown',
+                        teamName: newName,
+                        megApproved: false,
+                        megLink: '',
+                        createdAt: userData.createdAt || new Date().toISOString()
+                    });
+                }
+                
+                showToast(`Team name updated to "${newName || 'Unnamed Team'}"!`, 'success');
+                loadTeamsData(); // Refresh to show updated name
+            } catch (error) {
+                console.error('Error saving team name:', error);
+                showToast('Error saving team name. Please try again.', 'error');
+            }
+        };
+
+        // Check authentication and admin status
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Check if user is an admin
+                const isAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase());
+
+                if (isAdmin) {
+                    // Show admin panel
+                    loadingState.classList.add('hidden');
+                    adminContent.classList.remove('hidden');
+                    adminEmail.textContent = user.email;
+                    
+                    // Load teams data
+                    loadTeamsData();
+                } else {
+                    // Access denied
+                    loadingState.classList.add('hidden');
+                    accessDenied.classList.remove('hidden');
+                }
+            } else {
+                // Not logged in, redirect to login
+                window.location.href = 'login.html';
+            }
         });
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 50) {
-                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
-            } else {
-                nav.style.boxShadow = 'none';
+        // Handle logout
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
             }
         });
     </script>
