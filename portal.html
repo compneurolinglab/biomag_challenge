@@ -1198,7 +1198,7 @@
                                     megBadge.textContent = 'Available';
                                     megBadge.className = 'status-badge status-available';
                                 } else {
-                                    megStatus.textContent = 'Pending approval(team-wide)';
+                                    megStatus.textContent = 'Register to download';
                                     megBadge.textContent = 'Pending';
                                     megBadge.className = 'status-badge status-pending';
                                 }
@@ -1209,14 +1209,14 @@
                                     megBadge.textContent = 'Available';
                                     megBadge.className = 'status-badge status-available';
                                 } else {
-                                    megStatus.textContent = 'Pending approval';
+                                    megStatus.textContent = 'Register to download';
                                     megBadge.textContent = 'Pending';
                                     megBadge.className = 'status-badge status-pending';
                                 }
                             }
                         } catch (teamError) {
                             console.error('Error loading team data:', teamError);
-                            megStatus.textContent = 'Pending approval';
+                            megStatus.textContent = 'Register to download';
                             megBadge.textContent = 'Pending';
                             megBadge.className = 'status-badge status-pending';
                         }
