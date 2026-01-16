@@ -1210,14 +1210,14 @@
                                     megBadge.className = 'status-badge status-available';
                                 } else {
                                     megStatus.textContent = 'Register to download';
-                                    megBadge.textContent = 'Pending';
+                                    megBadge.textContent = 'Register to download';
                                     megBadge.className = 'status-badge status-pending';
                                 }
                             }
                         } catch (teamError) {
                             console.error('Error loading team data:', teamError);
                             megStatus.textContent = 'Register to download';
-                            megBadge.textContent = 'Pending';
+                            megBadge.textContent = 'Register to download';
                             megBadge.className = 'status-badge status-pending';
                         }
                     } else {
