@@ -269,6 +269,10 @@
             border-left: 4px solid var(--orange);
         }
 
+        .about-card-full {
+            grid-column: 1 / -1;
+        }
+
         .about-card h3 {
             font-size: 1.5rem;
             color: var(--navy);
@@ -428,6 +432,19 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: var(--navy);
+        }
+
+        .timeline-submit-link {
+            display: inline-block;
+            margin-top: 0.35rem;
+            font-size: 0.85rem;
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .timeline-submit-link:hover {
+            text-decoration: underline;
         }
 
         /* Data Access */
@@ -1017,8 +1034,9 @@
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
-                        <div class="timeline-date">June 2026</div>
+                        <div class="timeline-date">June 30, 2026</div>
                         <h4>First (Draft) Report Due (preregistration)</h4>
+                        <a href="#submission" class="timeline-submit-link">Submit info</a>
                     </div>
                     <div class="timeline-dot"></div>
                 </div>
@@ -1031,8 +1049,8 @@
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
-                        <div class="timeline-date">July 2026</div>
-                        <h4>Replication Report Due</h4>
+                        <div class="timeline-date">July 30, 2026</div>
+                        <h4>Final Report Due</h4>
                     </div>
                     <div class="timeline-dot"></div>
                 </div>
@@ -1178,13 +1196,12 @@
                 <p>Submission requirements and guidelines</p>
             </div>
             <div class="about-content">
-                <div class="about-card">
+                <div class="about-card about-card-full">
                     <h3>Report Requirements</h3>
-                    <p>Teams are required to submit a written report supplemented by figures and codes (max 8 pages). The report should comprehensively address all the evaluation criteria. The provided code should be replication-friendly and with clear comments.</p>
-                </div>
-                <div class="about-card">
-                    <h3>Key Considerations</h3>
-                    <p>Make explicit how concerns on overfitting and reliability were addressed (e.g., consider developing measures on one part of the data set and test on the second part). Address potential concerns complicating the interpretation (e.g., field spread and event-related fields). At the end of the challenge, all submitted materials will be made public.</p>
+                    <p><strong>Format:</strong> Please present your work in a clear academic structure, including motivation, method, results, and interpretation.</p>
+                    <p style="margin-top: 0.6rem;"><strong>Reference paper:</strong> d'Ascoli et al. (2025), <em>TRIBE: TRImodal Brain Encoder for whole-brain fMRI response prediction</em> (<a href="https://openreview.net/forum?id=biegtqdqmg" target="_blank" style="color: var(--orange);">link</a> | <a href="pics/d’Ascoli_2025.pdf" target="_blank" style="color: var(--orange);">PDF</a>).</p>
+                    <p style="margin-top: 0.6rem;"><strong>Minimum content:</strong> Include a model-structure illustration (similar to Figure 2) and decoding scores (similar to Table 1).</p>
+                    <p style="margin-top: 0.6rem;"><strong>Final submission:</strong> Submit both the final report and your model so the committee can test and compare performance across teams.</p>
                 </div>
             </div>
         </div>

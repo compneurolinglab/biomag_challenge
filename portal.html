@@ -282,6 +282,38 @@
             margin-bottom: 0.5rem;
         }
 
+        .submission-form {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .submission-form input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .submission-form input:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .submission-note {
+            font-size: 0.78rem;
+            color: var(--gray-500);
+            margin-top: 0.15rem;
+        }
+
+        .submission-status {
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
+            color: var(--gray-500);
+        }
+
         .btn {
             display: inline-block;
             padding: 0.6rem 1.2rem;
@@ -928,16 +960,29 @@
                         <div class="submission-icon draft">📋</div>
                         <div class="submission-content">
                             <h4>First (Draft) Report</h4>
-                            <p>Due: June 2026 • Preregistration of your approach</p>
-                            <button class="btn btn-disabled" disabled>Not Yet Available</button>
+                            <p>Due: June 30, 2026 • Preregistration of your approach</p>
+                            <div class="submission-form">
+                                <input type="file" id="draftReportFile" accept=".pdf,application/pdf">
+                                <p class="submission-note">Accepted format: <strong>PDF only</strong> (.pdf)</p>
+                                <button class="btn btn-primary" id="submitDraftBtn">Upload First Draft PDF</button>
+                            </div>
+                            <p class="submission-status" id="draftStatus">No draft submitted yet.</p>
                         </div>
                     </div>
                     <div class="submission-item">
                         <div class="submission-icon final">📄</div>
                         <div class="submission-content">
-                            <h4>Replication Report</h4>
-                            <p>Due: July 2026 • Final submission with Batch 2 results</p>
-                            <button class="btn btn-disabled" disabled>Not Yet Available</button>
+                            <h4>Final Report + Model</h4>
+                            <p>Due: July 30, 2026 • Final report and model submission are both required</p>
+                            <div class="submission-form">
+                                <input type="file" id="finalReportFile" accept=".pdf,application/pdf">
+                                <p class="submission-note">Final report format: <strong>PDF only</strong> (.pdf)</p>
+                                <input type="file" id="finalModelFile" accept=".zip,.tar,.tar.gz,.tgz,.gz,.7z,.rar,application/zip,application/x-zip-compressed,application/gzip,application/x-gzip,application/x-7z-compressed,application/vnd.rar">
+                                <p class="submission-note">Model format: <strong>compressed archive only</strong> (.zip, .tar, .tar.gz, .tgz, .gz, .7z, .rar)</p>
+                                <button class="btn btn-primary" id="submitFinalBtn">Upload Final Report + Model</button>
+                            </div>
+                            <p class="submission-note">Final submission must include both report and model so the committee can test and compare models across teams.</p>
+                            <p class="submission-status" id="finalStatus">No final submission yet.</p>
                         </div>
                     </div>
                 </div>
@@ -993,6 +1038,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1008,6 +1054,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         // Admin email whitelist (same as admin.html)
         const ADMIN_EMAILS = [
@@ -1027,6 +1074,93 @@
 
         let currentUserId = null;
         let currentTeamId = null;
+        let currentSubmissions = {};
+
+        function formatSubmittedAt(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            if (Number.isNaN(date.getTime())) return '';
+            return date.toLocaleString();
+        }
+
+        function renderSubmissionStatus(submissions = {}) {
+            currentSubmissions = submissions || {};
+            const draftStatus = document.getElementById('draftStatus');
+            const finalStatus = document.getElementById('finalStatus');
+
+            const draft = submissions?.draft;
+            if (draft?.reportLink) {
+                const draftTime = formatSubmittedAt(draft.submittedAt);
+                draftStatus.innerHTML = `Submitted${draftTime ? ` on ${draftTime}` : ''}: <a href="${draft.reportLink}" target="_blank" style="color: var(--orange);">View draft report PDF</a>`;
+            } else {
+                draftStatus.textContent = 'No draft submitted yet.';
+            }
+
+            const final = submissions?.final;
+            if (final?.reportLink && final?.modelLink) {
+                const finalTime = formatSubmittedAt(final.submittedAt);
+                finalStatus.innerHTML = `Submitted${finalTime ? ` on ${finalTime}` : ''}: <a href="${final.reportLink}" target="_blank" style="color: var(--orange);">View final report PDF</a> • <a href="${final.modelLink}" target="_blank" style="color: var(--orange);">View model archive</a>`;
+            } else {
+                finalStatus.textContent = 'No final submission yet.';
+            }
+        }
+
+        function hasAllowedExtension(fileName, allowedExtensions) {
+            const lower = (fileName || '').toLowerCase();
+            return allowedExtensions.some(ext => lower.endsWith(ext));
+        }
+
+        function validatePdf(file) {
+            if (!file) return false;
+            if (file.type === 'application/pdf') return true;
+            return hasAllowedExtension(file.name, ['.pdf']);
+        }
+
+        function validateCompressedModel(file) {
+            if (!file) return false;
+            if (hasAllowedExtension(file.name, ['.zip', '.tar', '.tar.gz', '.tgz', '.gz', '.7z', '.rar'])) return true;
+            const acceptedTypes = [
+                'application/zip',
+                'application/x-zip-compressed',
+                'application/gzip',
+                'application/x-gzip',
+                'application/x-7z-compressed',
+                'application/vnd.rar'
+            ];
+            return acceptedTypes.includes(file.type);
+        }
+
+        async function uploadSubmissionFile(file, stageFolder) {
+            const timestamp = Date.now();
+            const safeName = (file.name || 'upload.bin').replace(/[^a-zA-Z0-9._-]/g, '_');
+            const storagePath = `submissions/${currentTeamId}/${stageFolder}/${timestamp}_${safeName}`;
+            const fileRef = ref(storage, storagePath);
+            await uploadBytes(fileRef, file);
+            const downloadUrl = await getDownloadURL(fileRef);
+            return { downloadUrl, storagePath, fileName: file.name };
+        }
+
+        async function ensureTeamDocument() {
+            const teamRef = doc(db, 'teams', currentTeamId);
+            const teamSnapshot = await getDoc(teamRef);
+            if (teamSnapshot.exists()) {
+                return teamRef;
+            }
+
+            const userDoc = await getDoc(doc(db, 'users', currentUserId));
+            const userData = userDoc.exists() ? userDoc.data() : {};
+            await setDoc(teamRef, {
+                teamLeaderId: currentUserId,
+                teamLeaderEmail: userData.email || '',
+                teamLeaderName: `${userData.title || ''} ${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown',
+                teamName: '',
+                megApproved: false,
+                megLink: '',
+                createdAt: userData.createdAt || new Date().toISOString()
+            }, { merge: true });
+
+            return teamRef;
+        }
 
         // Message Modal Functions
         function showMessage(title, text, type = 'info') {
@@ -1202,6 +1336,8 @@
                                     megBadge.textContent = 'Pending';
                                     megBadge.className = 'status-badge status-pending';
                                 }
+
+                                renderSubmissionStatus(teamData.submissions || {});
                             } else {
                                 // Fallback: check user document for legacy data
                                 if (data.megApproved) {
@@ -1213,12 +1349,15 @@
                                     megBadge.textContent = 'Pending';
                                     megBadge.className = 'status-badge status-pending';
                                 }
+
+                                renderSubmissionStatus(data.submissions || {});
                             }
                         } catch (teamError) {
                             console.error('Error loading team data:', teamError);
                             megStatus.textContent = 'Pending approval';
                             megBadge.textContent = 'Pending';
                             megBadge.className = 'status-badge status-pending';
+                            renderSubmissionStatus({});
                         }
                     } else {
                         // No user document found
@@ -1383,6 +1522,131 @@
             } finally {
                 inviteBtn.textContent = 'Send Invite';
                 inviteBtn.disabled = false;
+            }
+        });
+
+        // Handle first draft report submission
+        document.getElementById('submitDraftBtn').addEventListener('click', async () => {
+            const draftReportFile = document.getElementById('draftReportFile').files[0];
+            const submitDraftBtn = document.getElementById('submitDraftBtn');
+
+            if (!draftReportFile) {
+                showMessage('Missing File', 'Please choose a draft report PDF before uploading.', 'error');
+                return;
+            }
+
+            if (!validatePdf(draftReportFile)) {
+                showMessage('Invalid File Type', 'Draft report must be a PDF file.', 'error');
+                return;
+            }
+
+            if (!currentUserId || !currentTeamId) {
+                showMessage('Please Wait', 'Your portal is still loading. Please try again in a moment.', 'info');
+                return;
+            }
+
+            submitDraftBtn.textContent = 'Uploading...';
+            submitDraftBtn.disabled = true;
+
+            try {
+                const teamRef = await ensureTeamDocument();
+                const uploadedDraft = await uploadSubmissionFile(draftReportFile, 'draft');
+                const submittedAt = new Date().toISOString();
+                await updateDoc(teamRef, {
+                    'submissions.draft.reportLink': uploadedDraft.downloadUrl,
+                    'submissions.draft.reportStoragePath': uploadedDraft.storagePath,
+                    'submissions.draft.reportFileName': uploadedDraft.fileName,
+                    'submissions.draft.submittedAt': submittedAt,
+                    'submissions.draft.submittedBy': auth.currentUser?.email || ''
+                });
+
+                renderSubmissionStatus({
+                    ...currentSubmissions,
+                    draft: {
+                        ...(currentSubmissions.draft || {}),
+                        reportLink: uploadedDraft.downloadUrl,
+                        reportStoragePath: uploadedDraft.storagePath,
+                        reportFileName: uploadedDraft.fileName,
+                        submittedAt
+                    }
+                });
+                showMessage('Draft Uploaded', 'Your first draft report PDF has been uploaded successfully.', 'success');
+            } catch (error) {
+                console.error('Error submitting draft report:', error);
+                showMessage('Upload Failed', 'Could not upload draft report PDF. Please try again.', 'error');
+            } finally {
+                submitDraftBtn.textContent = 'Upload First Draft PDF';
+                submitDraftBtn.disabled = false;
+            }
+        });
+
+        // Handle final report and model submission
+        document.getElementById('submitFinalBtn').addEventListener('click', async () => {
+            const finalReportFile = document.getElementById('finalReportFile').files[0];
+            const finalModelFile = document.getElementById('finalModelFile').files[0];
+            const submitFinalBtn = document.getElementById('submitFinalBtn');
+
+            if (!finalReportFile || !finalModelFile) {
+                showMessage('Missing Information', 'Final submission requires both a report PDF and a model archive file.', 'error');
+                return;
+            }
+
+            if (!validatePdf(finalReportFile)) {
+                showMessage('Invalid File Type', 'Final report must be a PDF file.', 'error');
+                return;
+            }
+
+            if (!validateCompressedModel(finalModelFile)) {
+                showMessage('Invalid File Type', 'Model file must be a compressed archive (.zip/.tar/.tar.gz/.tgz/.gz/.7z/.rar).', 'error');
+                return;
+            }
+
+            if (!currentUserId || !currentTeamId) {
+                showMessage('Please Wait', 'Your portal is still loading. Please try again in a moment.', 'info');
+                return;
+            }
+
+            submitFinalBtn.textContent = 'Uploading...';
+            submitFinalBtn.disabled = true;
+
+            try {
+                const teamRef = await ensureTeamDocument();
+                const [uploadedFinalReport, uploadedFinalModel] = await Promise.all([
+                    uploadSubmissionFile(finalReportFile, 'final'),
+                    uploadSubmissionFile(finalModelFile, 'final')
+                ]);
+                const submittedAt = new Date().toISOString();
+                await updateDoc(teamRef, {
+                    'submissions.final.reportLink': uploadedFinalReport.downloadUrl,
+                    'submissions.final.reportStoragePath': uploadedFinalReport.storagePath,
+                    'submissions.final.reportFileName': uploadedFinalReport.fileName,
+                    'submissions.final.modelLink': uploadedFinalModel.downloadUrl,
+                    'submissions.final.modelStoragePath': uploadedFinalModel.storagePath,
+                    'submissions.final.modelFileName': uploadedFinalModel.fileName,
+                    'submissions.final.submittedAt': submittedAt,
+                    'submissions.final.submittedBy': auth.currentUser?.email || ''
+                });
+
+                renderSubmissionStatus({
+                    ...currentSubmissions,
+                    final: {
+                        ...(currentSubmissions.final || {}),
+                        reportLink: uploadedFinalReport.downloadUrl,
+                        reportStoragePath: uploadedFinalReport.storagePath,
+                        reportFileName: uploadedFinalReport.fileName,
+                        modelLink: uploadedFinalModel.downloadUrl,
+                        modelStoragePath: uploadedFinalModel.storagePath,
+                        modelFileName: uploadedFinalModel.fileName,
+                        submittedAt
+                    }
+                });
+                showMessage('Final Submission Received', 'Your final report PDF and model archive have been uploaded successfully.', 'success');
+            } catch (error) {
+                console.error('Error submitting final report/model:', error);
+                showMessage('Upload Failed', 'Could not upload final report/model files. Please try again.', 'error');
+            } finally {
+                submitFinalBtn.textContent = 'Upload Final Report + Model';
+                submitFinalBtn.disabled = false;
             }
         });
 
