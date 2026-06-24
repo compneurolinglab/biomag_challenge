@@ -377,6 +377,74 @@
             font-style: italic;
         }
 
+        /* Submission Files */
+        .submission-files {
+            margin-bottom: 1rem;
+            background: var(--gray-100);
+            border-radius: 10px;
+            padding: 0.9rem;
+        }
+
+        .submission-files h5 {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submission-file-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.85rem;
+            padding: 0.4rem 0;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .submission-file-row:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .submission-file-row:last-of-type {
+            padding-bottom: 0;
+        }
+
+        .submission-file-label {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .submission-file-value {
+            color: var(--gray-500);
+            text-align: right;
+        }
+
+        .submission-file-value a {
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .submission-file-value a:hover {
+            text-decoration: underline;
+        }
+
+        .submission-time {
+            display: block;
+            font-size: 0.75rem;
+            margin-top: 0.15rem;
+        }
+
+        .submission-path {
+            display: block;
+            font-size: 0.72rem;
+            margin-top: 0.15rem;
+            word-break: break-all;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .admin-header {
@@ -504,6 +572,23 @@
             }, 3000);
         }
 
+        function formatSubmissionTime(ts) {
+            if (!ts) return '';
+            const d = new Date(ts);
+            if (Number.isNaN(d.getTime())) return '';
+            return d.toLocaleString();
+        }
+
+        function renderSubmissionLink(link, label) {
+            if (!link) return '<span>Not submitted</span>';
+            return `<a href="${link}" target="_blank">${label}</a>`;
+        }
+
+        function renderDropboxPath(path) {
+            if (!path) return '';
+            return `<span class="submission-path">${path}</span>`;
+        }
+
         // Load all teams and users
         async function loadTeamsData() {
             const teamsList = document.getElementById('teamsList');
@@ -557,6 +642,7 @@
                             teamLeaderName: `${user.title || ''} ${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
                             megApproved: user.megApproved || false,
                             megLink: user.megLink || '',
+                            submissions: user.submissions || {},
                             createdAt: user.createdAt || new Date().toISOString(),
                             isLegacy: true // Flag to indicate this needs team doc creation
                         });
@@ -580,6 +666,10 @@
                     const memberCount = teamMembers.length;
                     const displayTeamName = team.teamName || 'Unnamed Team';
                     const displayTeamNumber = team.teamNumber || `(Legacy: ${team.id.substring(0, 8)}...)`;
+                    const draftSubmission = team.submissions?.draft || {};
+                    const finalSubmission = team.submissions?.final || {};
+                    const draftTime = formatSubmissionTime(draftSubmission.submittedAt);
+                    const finalTime = formatSubmissionTime(finalSubmission.submittedAt);
                     
                     return `
                         <div class="team-card" data-team-id="${team.id}">
@@ -615,6 +705,34 @@
                                     <strong>Research Interest:</strong> ${teamMembers[0].research}
                                 </div>
                             ` : ''}
+
+                            <div class="submission-files">
+                                <h5>Submitted Files</h5>
+                                <div class="submission-file-row">
+                                    <span class="submission-file-label">Draft Report (PDF)</span>
+                                    <span class="submission-file-value">
+                                        ${renderSubmissionLink(draftSubmission.reportLink, 'View')}
+                                        ${draftTime ? `<span class="submission-time">${draftTime}</span>` : ''}
+                                        ${renderDropboxPath(draftSubmission.reportDropboxPath || draftSubmission.reportStoragePath)}
+                                    </span>
+                                </div>
+                                <div class="submission-file-row">
+                                    <span class="submission-file-label">Final Report (PDF)</span>
+                                    <span class="submission-file-value">
+                                        ${renderSubmissionLink(finalSubmission.reportLink, 'View')}
+                                        ${finalTime ? `<span class="submission-time">${finalTime}</span>` : ''}
+                                        ${renderDropboxPath(finalSubmission.reportDropboxPath || finalSubmission.reportStoragePath)}
+                                    </span>
+                                </div>
+                                <div class="submission-file-row">
+                                    <span class="submission-file-label">Model Archive</span>
+                                    <span class="submission-file-value">
+                                        ${renderSubmissionLink(finalSubmission.modelLink, 'View')}
+                                        ${finalTime ? `<span class="submission-time">${finalTime}</span>` : ''}
+                                        ${renderDropboxPath(finalSubmission.modelDropboxPath || finalSubmission.modelStoragePath)}
+                                    </span>
+                                </div>
+                            </div>
                             
                             <div class="team-actions">
                                 <div class="action-row">

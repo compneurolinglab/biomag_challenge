@@ -1038,7 +1038,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1054,7 +1053,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
+        const DROPBOX_UPLOAD_ENDPOINT = '/.netlify/functions/upload-to-dropbox';
 
         // Admin email whitelist (same as admin.html)
         const ADMIN_EMAILS = [
@@ -1074,6 +1073,7 @@
 
         let currentUserId = null;
         let currentTeamId = null;
+        let currentTeamName = '';
         let currentSubmissions = {};
 
         function formatSubmittedAt(timestamp) {
@@ -1130,14 +1130,62 @@
             return acceptedTypes.includes(file.type);
         }
 
-        async function uploadSubmissionFile(file, stageFolder) {
-            const timestamp = Date.now();
-            const safeName = (file.name || 'upload.bin').replace(/[^a-zA-Z0-9._-]/g, '_');
-            const storagePath = `submissions/${currentTeamId}/${stageFolder}/${timestamp}_${safeName}`;
-            const fileRef = ref(storage, storagePath);
-            await uploadBytes(fileRef, file);
-            const downloadUrl = await getDownloadURL(fileRef);
-            return { downloadUrl, storagePath, fileName: file.name };
+        function getUploadErrorMessage(error) {
+            return error?.message || 'Upload failed. Please try again or contact the organizer.';
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = String(reader.result || '');
+                    resolve(result.includes(',') ? result.split(',')[1] : result);
+                };
+                reader.onerror = () => reject(reader.error || new Error('Failed to read selected file.'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function uploadSubmissionFile(file, stageFolder, onProgress) {
+            if (typeof onProgress === 'function') onProgress(5);
+            const fileData = await readFileAsBase64(file);
+            if (typeof onProgress === 'function') onProgress(20);
+
+            const response = await fetch(DROPBOX_UPLOAD_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fileName: file.name,
+                    fileType: file.type || 'application/octet-stream',
+                    fileData,
+                    stage: stageFolder,
+                    teamId: currentTeamId,
+                    teamName: currentTeamName || document.getElementById('teamNameValue')?.textContent || '',
+                    submittedBy: auth.currentUser?.email || ''
+                })
+            });
+
+            let result = {};
+            try {
+                result = await response.json();
+            } catch (error) {
+                result = {};
+            }
+
+            if (!response.ok) {
+                throw new Error(result.error || `Upload failed with status ${response.status}.`);
+            }
+
+            if (typeof onProgress === 'function') onProgress(100);
+
+            return {
+                downloadUrl: result.sharedLink,
+                storagePath: result.dropboxPath,
+                fileName: result.fileName || file.name,
+                dropboxPath: result.dropboxPath,
+                dropboxId: result.dropboxId,
+                fileSize: result.fileSize
+            };
         }
 
         async function ensureTeamDocument() {
@@ -1321,6 +1369,7 @@
                                 
                                 // Display team name
                                 const teamNameValue = document.getElementById('teamNameValue');
+                                currentTeamName = teamData.teamName || '';
                                 teamNameValue.textContent = teamData.teamName || 'Not set (click to add)';
                                 if (!teamData.teamName) {
                                     teamNameValue.style.color = 'var(--gray-500)';
@@ -1340,6 +1389,7 @@
                                 renderSubmissionStatus(teamData.submissions || {});
                             } else {
                                 // Fallback: check user document for legacy data
+                                currentTeamName = data.teamName || '';
                                 if (data.megApproved) {
                                     megStatus.innerHTML = `<a href="${data.megLink || '#'}" target="_blank" style="color: var(--orange);">Click to download</a>`;
                                     megBadge.textContent = 'Available';
@@ -1440,6 +1490,7 @@
                 
                 // Update display
                 const teamNameValue = document.getElementById('teamNameValue');
+                currentTeamName = newName;
                 teamNameValue.textContent = newName || 'Not set (click to add)';
                 teamNameValue.style.color = newName ? 'var(--orange)' : 'var(--gray-500)';
                 teamNameValue.style.fontStyle = newName ? 'normal' : 'italic';
@@ -1550,12 +1601,17 @@
 
             try {
                 const teamRef = await ensureTeamDocument();
-                const uploadedDraft = await uploadSubmissionFile(draftReportFile, 'draft');
+                const uploadedDraft = await uploadSubmissionFile(draftReportFile, 'draft', (progress) => {
+                    submitDraftBtn.textContent = `Uploading... ${progress}%`;
+                });
                 const submittedAt = new Date().toISOString();
                 await updateDoc(teamRef, {
                     'submissions.draft.reportLink': uploadedDraft.downloadUrl,
                     'submissions.draft.reportStoragePath': uploadedDraft.storagePath,
+                    'submissions.draft.reportDropboxPath': uploadedDraft.dropboxPath,
+                    'submissions.draft.reportDropboxId': uploadedDraft.dropboxId,
                     'submissions.draft.reportFileName': uploadedDraft.fileName,
+                    'submissions.draft.reportFileSize': uploadedDraft.fileSize,
                     'submissions.draft.submittedAt': submittedAt,
                     'submissions.draft.submittedBy': auth.currentUser?.email || ''
                 });
@@ -1566,14 +1622,17 @@
                         ...(currentSubmissions.draft || {}),
                         reportLink: uploadedDraft.downloadUrl,
                         reportStoragePath: uploadedDraft.storagePath,
+                        reportDropboxPath: uploadedDraft.dropboxPath,
+                        reportDropboxId: uploadedDraft.dropboxId,
                         reportFileName: uploadedDraft.fileName,
+                        reportFileSize: uploadedDraft.fileSize,
                         submittedAt
                     }
                 });
                 showMessage('Draft Uploaded', 'Your first draft report PDF has been uploaded successfully.', 'success');
             } catch (error) {
                 console.error('Error submitting draft report:', error);
-                showMessage('Upload Failed', 'Could not upload draft report PDF. Please try again.', 'error');
+                showMessage('Upload Failed', getUploadErrorMessage(error), 'error');
             } finally {
                 submitDraftBtn.textContent = 'Upload First Draft PDF';
                 submitDraftBtn.disabled = false;
@@ -1611,18 +1670,26 @@
 
             try {
                 const teamRef = await ensureTeamDocument();
-                const [uploadedFinalReport, uploadedFinalModel] = await Promise.all([
-                    uploadSubmissionFile(finalReportFile, 'final'),
-                    uploadSubmissionFile(finalModelFile, 'final')
-                ]);
+                const uploadedFinalReport = await uploadSubmissionFile(finalReportFile, 'final', (progress) => {
+                    submitFinalBtn.textContent = `Uploading report... ${progress}%`;
+                });
+                const uploadedFinalModel = await uploadSubmissionFile(finalModelFile, 'final', (progress) => {
+                    submitFinalBtn.textContent = `Uploading model... ${progress}%`;
+                });
                 const submittedAt = new Date().toISOString();
                 await updateDoc(teamRef, {
                     'submissions.final.reportLink': uploadedFinalReport.downloadUrl,
                     'submissions.final.reportStoragePath': uploadedFinalReport.storagePath,
+                    'submissions.final.reportDropboxPath': uploadedFinalReport.dropboxPath,
+                    'submissions.final.reportDropboxId': uploadedFinalReport.dropboxId,
                     'submissions.final.reportFileName': uploadedFinalReport.fileName,
+                    'submissions.final.reportFileSize': uploadedFinalReport.fileSize,
                     'submissions.final.modelLink': uploadedFinalModel.downloadUrl,
                     'submissions.final.modelStoragePath': uploadedFinalModel.storagePath,
+                    'submissions.final.modelDropboxPath': uploadedFinalModel.dropboxPath,
+                    'submissions.final.modelDropboxId': uploadedFinalModel.dropboxId,
                     'submissions.final.modelFileName': uploadedFinalModel.fileName,
+                    'submissions.final.modelFileSize': uploadedFinalModel.fileSize,
                     'submissions.final.submittedAt': submittedAt,
                     'submissions.final.submittedBy': auth.currentUser?.email || ''
                 });
@@ -1633,17 +1700,23 @@
                         ...(currentSubmissions.final || {}),
                         reportLink: uploadedFinalReport.downloadUrl,
                         reportStoragePath: uploadedFinalReport.storagePath,
+                        reportDropboxPath: uploadedFinalReport.dropboxPath,
+                        reportDropboxId: uploadedFinalReport.dropboxId,
                         reportFileName: uploadedFinalReport.fileName,
+                        reportFileSize: uploadedFinalReport.fileSize,
                         modelLink: uploadedFinalModel.downloadUrl,
                         modelStoragePath: uploadedFinalModel.storagePath,
+                        modelDropboxPath: uploadedFinalModel.dropboxPath,
+                        modelDropboxId: uploadedFinalModel.dropboxId,
                         modelFileName: uploadedFinalModel.fileName,
+                        modelFileSize: uploadedFinalModel.fileSize,
                         submittedAt
                     }
                 });
                 showMessage('Final Submission Received', 'Your final report PDF and model archive have been uploaded successfully.', 'success');
             } catch (error) {
                 console.error('Error submitting final report/model:', error);
-                showMessage('Upload Failed', 'Could not upload final report/model files. Please try again.', 'error');
+                showMessage('Upload Failed', getUploadErrorMessage(error), 'error');
             } finally {
                 submitFinalBtn.textContent = 'Upload Final Report + Model';
                 submitFinalBtn.disabled = false;
