@@ -1053,7 +1053,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const DROPBOX_UPLOAD_ENDPOINT = '/.netlify/functions/upload-to-dropbox';
+        const DROPBOX_UPLOAD_ENDPOINT = 'https://charming-arithmetic-8a28f0.netlify.app/.netlify/functions/upload-to-dropbox';
 
         // Admin email whitelist (same as admin.html)
         const ADMIN_EMAILS = [
