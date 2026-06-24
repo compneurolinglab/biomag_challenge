@@ -45,6 +45,12 @@ function ensureLeadingSlash(path) {
   return path.startsWith('/') ? path : `/${path}`;
 }
 
+function toDropboxApiArg(value) {
+  return JSON.stringify(value).replace(/[\u007f-\uffff]/g, (char) => {
+    return `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`;
+  });
+}
+
 async function getDropboxAccessToken() {
   const params = new URLSearchParams({
     grant_type: 'refresh_token',
@@ -158,7 +164,7 @@ exports.handler = async function handler(event) {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Dropbox-API-Arg': JSON.stringify({
+        'Dropbox-API-Arg': toDropboxApiArg({
           path: dropboxPath,
           mode: 'add',
           autorename: true,
